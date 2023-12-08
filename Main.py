@@ -1,0 +1,1 @@
+# run this command in terminal: pip install mysql-connector-python
