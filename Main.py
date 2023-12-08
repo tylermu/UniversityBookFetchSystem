@@ -8,8 +8,8 @@ def connect_to_database():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="1234",
-            database="mspdatabase"
+            password="", #Enter your password
+            database="cisc450project"
         )
         return connection
     except Error as e:
@@ -48,9 +48,9 @@ def main():
             with connection.cursor() as cursor:
 
                 # Select from plane
-                select_and_print(cursor, "SELECT * FROM plane", "Displaying data from the 'plane' table", ["tail_no", "make", "model", "capacity", "mph"])
+                select_and_print(cursor, "SELECT book_title FROM book", "Displaying data from the 'book' table", ["book_title"])
 
-                # Select from passengers with a join
+                '''# Select from passengers with a join
                 select_and_print(cursor, "SELECT p.f_name, p.l_name FROM passengers as p INNER JOIN onboard o ON p.ssn = o.ssn WHERE o.seat = '30C'", "Displaying passengers with seat '30C'", ["f_name", "l_name"])
 
                 # Delete from plane
@@ -76,7 +76,7 @@ def main():
                 update_query = "UPDATE passengers SET m_name = %s WHERE f_name = %s"
                 update_values = ('L', 'Frank')
                 execute_query(cursor, update_query, update_values)
-                select_and_print(cursor, "SELECT * FROM passengers", "Updating passengers: Set middle name to 'L' for 'Frank'", ["ssn", "f_name", "l_name", "m_name"])
+                select_and_print(cursor, "SELECT * FROM passengers", "Updating passengers: Set middle name to 'L' for 'Frank'", ["ssn", "f_name", "l_name", "m_name"])'''
 
             connection.commit()
 
