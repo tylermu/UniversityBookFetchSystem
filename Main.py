@@ -58,16 +58,16 @@ def main():
         response = input("Which user would you like to enter the database as? ")
         if response == 1:
             userPermissions = 'Student'
-            Student.studentmain()
+            studentmain()
         if response == 2:
             userPermissions = 'Customer Service Employee'
-            Customer_Service.customerservicemain()
+            customerservicemain()
         if response == 3:
             userPermissions = 'Administrator'
-            Administrator.administratormain()
+            administratormain()
         if response == 4:
             userPermissions = 'Super Administrator'
-            Super_Administrator.superadministratormain()
+            superadministratormain()
 
 
 
