@@ -1,8 +1,8 @@
 # run this command in terminal: pip install mysql-connector-python
-import Student
-import Customer_Service
-import Administrator
-import Super_Administrator
+from Student import *
+from Customer_Service import *
+from Administrator import *
+from Super_Administrator import *
 
 import mysql.connector
 from mysql.connector import Error

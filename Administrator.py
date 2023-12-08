@@ -1,1 +1,2 @@
 def administratormain():
+    print("administrator")
