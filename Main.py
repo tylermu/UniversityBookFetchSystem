@@ -54,18 +54,18 @@ def main():
     print("2. Customer Service Employee")
     print("3. Administrator")
     print("4. Super Administrator")
-    while response != 1 or response != 2 or response != 3 or response != 4:
+    while response != '1' and response != '2' and response != '3' and response != '4':
         response = input("Which user would you like to enter the database as? ")
-        if response == 1:
+        if response == '1':
             userPermissions = 'Student'
             studentmain()
-        if response == 2:
+        if response == '2':
             userPermissions = 'Customer Service Employee'
             customerservicemain()
-        if response == 3:
+        if response == '3':
             userPermissions = 'Administrator'
             administratormain()
-        if response == 4:
+        if response == '4':
             userPermissions = 'Super Administrator'
             superadministratormain()
 
