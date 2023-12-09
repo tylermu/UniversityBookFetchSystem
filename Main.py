@@ -12,7 +12,7 @@ def connect_to_database():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="tyler0625!", #Enter your password
+            password="", #Enter your password
             database="cisc450project"
         )
         return connection
@@ -47,31 +47,44 @@ def select_and_print(cursor, query, section_name, column_names=None):
         print("  ".join(map(str, row)))
 
 def main():
-    response = 6
-    print("")
-    print("Welcome to the BookFetch Database System")
-    print("1. Student")
-    print("2. Customer Service Employee")
-    print("3. Administrator")
-    print("4. Super Administrator")
-    print("5. Quit Program")
-    while response not in ['1', '2', '3', '4', '5']:
-        response = input("Which user would you like to enter the database as? ")
-        if response == '1':
-            userPermissions = 'Student'
-            studentmain()
-        if response == '2':
-            userPermissions = 'Customer Service Employee'
-            customerservicemain()
-        if response == '3':
-            userPermissions = 'Administrator'
-            administratormain()
-        if response == '4':
-            userPermissions = 'Super Administrator'
-            superadministratormain()
-        if response == '5':
-            break
 
+    try:
+        with connect_to_database() as connection:
+            with connection.cursor() as cursor:
+
+                print("Welcome to the BookFetch Database System")
+
+                while True:
+
+                    print("")
+                    print("1. Student")
+                    print("2. Customer Service Employee")
+                    print("3. Administrator")
+                    print("4. Super Administrator")
+                    print("5. Quit Program")
+
+                    response = input("Which user would you like to enter the database as? ")
+                    if response == '1':
+                        userPermissions = 'Student'
+                        studentmain(cursor)
+                    elif response == '2':
+                        userPermissions = 'Customer Service Employee'
+                        customerservicemain()
+                    elif response == '3':
+                        userPermissions = 'Administrator'
+                        administratormain()
+                    elif response == '4':
+                        userPermissions = 'Super Administrator'
+                        superadministratormain()
+                    elif response == '5':
+                        break
+                    else:
+                        print("\nInvalid choice, try again")
+
+            connection.commit()
+
+    except Error as e:
+        print(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
