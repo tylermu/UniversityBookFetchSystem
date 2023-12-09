@@ -3,6 +3,7 @@ from Student import *
 from Customer_Service import *
 from Administrator import *
 from Super_Administrator import *
+from password import password
 
 import mysql.connector
 from mysql.connector import Error
