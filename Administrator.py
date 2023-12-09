@@ -1,2 +1,2 @@
-def administratormain():
+def administratormain(cursor, connection):
     print("administrator")

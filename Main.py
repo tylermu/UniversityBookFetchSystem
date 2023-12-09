@@ -67,22 +67,22 @@ def main():
                     response = input("Which user would you like to enter the database as? ")
                     if response == '1':
                         userPermissions = 'Student'
-                        studentmain(cursor)
+                        studentmain(cursor, connection)
                     elif response == '2':
                         userPermissions = 'Customer Service Employee'
-                        customerservicemain()
+                        customerservicemain(cursor, connection)
                     elif response == '3':
                         userPermissions = 'Administrator'
-                        administratormain()
+                        administratormain(cursor, connection)
                     elif response == '4':
                         userPermissions = 'Super Administrator'
-                        superadministratormain()
+                        superadministratormain(cursor, connection)
                     elif response == '5':
                         break
                     else:
                         print("\nInvalid choice, try again")
 
-            connection.commit()
+            connection.close()
 
     except Error as e:
         print(f"An error occurred: {e}")
