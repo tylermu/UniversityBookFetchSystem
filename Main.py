@@ -54,7 +54,8 @@ def main():
     print("2. Customer Service Employee")
     print("3. Administrator")
     print("4. Super Administrator")
-    while response != '1' and response != '2' and response != '3' and response != '4':
+    print("5. Quit Program")
+    while response not in ['1', '2', '3', '4', '5']:
         response = input("Which user would you like to enter the database as? ")
         if response == '1':
             userPermissions = 'Student'
@@ -68,6 +69,8 @@ def main():
         if response == '4':
             userPermissions = 'Super Administrator'
             superadministratormain()
+        if response == '5':
+            break
 
 
 
