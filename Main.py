@@ -13,7 +13,7 @@ def connect_to_database():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="", #Enter your password
+            password=password, #Enter your password
             database="cisc450project"
         )
         return connection
