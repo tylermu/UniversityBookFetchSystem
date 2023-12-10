@@ -12,11 +12,10 @@ def studentmain(cursor, connection):
         print("Which action are you performing?")
         print("1. Create Student Account")
         print("2. Shop for Books")
-        print("3. View Cart")
-        print("4. Submit Order")
-        print("5. Submit Book Review")
-        print("6. Create Trouble Ticket")
-        print("7. Go Back")
+        print("3. View Carts and Checkout")
+        print("4. Submit Book Review")
+        print("5. Create Trouble Ticket")
+        print("6. Go Back")
 
         response = input("Enter number: ")
         if response == '1':
@@ -28,15 +27,12 @@ def studentmain(cursor, connection):
             #User wants to view their cart
             viewCart(cursor, connection)
         elif response == '4':
-            #User wants to checkout
-            submitOrder(cursor, connection)
-        elif response == '5':
             #User wants to review a book they've purchased
             submitReview(cursor, connection)
-        elif response == '6':
+        elif response == '5':
             #User wants to file a complaint via the trouble ticket system
             createTroubleTicket(cursor, connection)
-        elif response == '7':
+        elif response == '6':
             break
         else:
             print("\nInvalid choice, try again")
@@ -267,7 +263,7 @@ def shopBooks(cursor, connection):
 #handles displaying all carts and contents for a given student
 def select_and_print_cart_details(cursor, studentID):
     query = """
-    SELECT c.cartID, ab.quantity, b.book_title, b.price
+    SELECT c.cartID, ab.quantity, b.book_title, b.isbn, b.price
     FROM cart c
     JOIN add_book ab ON c.cartID = ab.cartID
     JOIN book b ON ab.isbn = b.isbn
@@ -277,7 +273,7 @@ def select_and_print_cart_details(cursor, studentID):
     result = cursor.fetchall()
 
     print("\n======= Cart Details =======")
-    column_names = ["cartID", "quantity", "book_title", "price"]
+    column_names = ["cartID", "quantity", "book_title", "isbn", "price"]
     if not result:
         print("No records found.")
     else:
@@ -288,10 +284,172 @@ def select_and_print_cart_details(cursor, studentID):
             print("  ".join(str(val).ljust(width) for val, width in zip(row, column_widths)))
 
 def viewCart(cursor, connection):
-    return
+    #Ensure valid studentID
+    while True:
+        studentID = input("Enter your student ID: ")
+        query = f"SELECT COUNT(*) FROM student WHERE studentID = {studentID}"
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
 
-def submitOrder(cursor, connection):
-    return
+        #if studentID exists, continue
+        if count > 0:
+            #check if cart exists
+            query = f"SELECT cartID, total_cost FROM cart WHERE studentID = {studentID}"
+            cursor.execute(query)
+            cart_result = cursor.fetchall()
+
+            if cart_result:
+                    #print list of carts for user to choose to interact with
+                    select_and_print_cart_details(cursor, studentID)
+
+                    while True:
+                        continue_input = input("Do you want to view a cart in detail (y/n)? ")
+                        if continue_input.lower() != 'y':
+                            break
+
+                        cartID_input = input("Enter the cartID of the cart to view in detail: ")
+
+                        # Check if the entered cartID is valid
+                        if any(cartID_input == str(cart[0]) for cart in cart_result):
+                            cartID = int(cartID_input)
+                            display_cart_contents(cursor, cartID)
+
+                            while True:
+
+                                print("Which action are you performing?")
+                                print("1. Delete item from the cart")
+                                print("2. Checkout")
+                                print("3. Go Back")
+
+                                response = input("Enter number: ")
+                                if response == '1':
+                                    deleted_item_isbn = input("Enter the isbn of the book you wish to delete from your cart: ")
+                                    delete_book_from_cart(cursor, connection, cartID, deleted_item_isbn)
+                                elif response == '2':
+                                    submitOrder(cursor, connection, cartID)
+                                elif response == '3':
+                                    #User wants to exit
+                                    break
+                                else:
+                                    print("\nInvalid choice, try again")
+
+                                break
+                        else:
+                            print("Invalid cartID. Please enter a valid cartID.")
+                        
+
+            else:
+                print("\nYou do not have any carts")
+            
+            break
+
+        else:
+            print("\nInvalid student ID. Please enter a valid student ID")
+
+def display_cart_contents(cursor, cartID):
+    query = """
+    SELECT ab.quantity, b.book_title, b.isbn, b.price
+    FROM add_book ab
+    JOIN book b ON ab.isbn = b.isbn
+    WHERE ab.cartID = %s
+    """
+    cursor.execute(query, (cartID,))
+    result = cursor.fetchall()
+
+    print("\n======= Cart Contents =======")
+    column_names = ["quantity", "book_title", "isbn", "price"]
+    if not result:
+        print("The cart is empty.")
+    else:
+        column_widths = [max(len(str(col)), max(len(str(row[i])) for row in result)) + 3 for i, col in enumerate(column_names)]
+        print("  ".join(col.ljust(width) for col, width in zip(column_names, column_widths)))
+
+        for row in result:
+            print("  ".join(str(val).ljust(width) for val, width in zip(row, column_widths)))
+
+def delete_book_from_cart(cursor, connection, cartID, isbn):
+    # Check if the ISBN exists in the cart
+    query = "SELECT COUNT(*) FROM add_book WHERE cartID = %s AND isbn = %s"
+    cursor.execute(query, (cartID, isbn))
+    count = cursor.fetchone()[0]
+
+    if count > 0:
+        # Get the quantity and price of the book in the cart
+        query = "SELECT quantity, price FROM add_book ab JOIN book b ON ab.isbn = b.isbn WHERE cartID = %s AND ab.isbn = %s"
+        cursor.execute(query, (cartID, isbn))
+        result = cursor.fetchone()
+        quantity, book_price = result[0], result[1]
+
+        # Delete the book from the cart
+        delete_query = "DELETE FROM add_book WHERE cartID = %s AND isbn = %s"
+        cursor.execute(delete_query, (cartID, isbn))
+        connection.commit()
+
+        # Update the total_cost in the cart
+        update_query = "UPDATE cart SET total_cost = total_cost - %s WHERE cartID = %s"
+        cursor.execute(update_query, (book_price * quantity, cartID))
+        connection.commit()
+
+        print("Book successfully deleted from the cart.")
+    else:
+        print("Invalid ISBN. The book does not exist in the cart.")
+
+def submitOrder(cursor, connection, cartID):
+    # Collect order information
+    ship_type_options = ['standard', '2-day', '1-day']
+    ship_type = input(f"Enter shipping type ({', '.join(ship_type_options)}): ").lower()
+    while ship_type not in ship_type_options:
+        print("Invalid shipping type. Please choose from the options.")
+        ship_type = input(f"Enter shipping type ({', '.join(ship_type_options)}): ").lower()
+
+    ship_address = input("Enter shipping address: ")
+
+    # Collect credit card information
+    credit_card_number = input("Enter credit card number: ")
+    while not credit_card_number.isdigit() or len(credit_card_number) != 16:
+        print("Invalid credit card number. Please enter a 16-digit number.")
+        credit_card_number = input("Enter credit card number: ")
+
+    credit_card_name = input("Enter credit card name: ")
+
+    # Collect and validate credit card expiration date
+    credit_card_expiration = input("Enter credit card expiration (YYYY-MM): ") + '-01'
+    while not validate_date_format(credit_card_expiration, '%Y-%m-%d'):
+        print("Invalid date format. Please enter the expiration date in YYYY-MM format.")
+        credit_card_expiration = input("Enter credit card expiration (YYYY-MM): ")
+
+    credit_card_type_options = ['VISA', 'MASTERCARD', 'AMERICAN EXPRESS', 'DISCOVER']
+    credit_card_type = input(f"Enter credit card type ({', '.join(credit_card_type_options)}): ").upper()
+    while credit_card_type not in credit_card_type_options:
+        print("Invalid credit card type. Please choose from the options.")
+        credit_card_type = input(f"Enter credit card type ({', '.join(credit_card_type_options)}): ").upper()
+
+    # Insert credit card information into the credit_card table
+    credit_card_insert_query = """
+    INSERT INTO credit_card (credit_card_number, credit_card_name, credit_card_expiration, credit_card_type)
+    VALUES (%s, %s, %s, %s)
+    """
+    cursor.execute(credit_card_insert_query, (credit_card_number, credit_card_name, credit_card_expiration, credit_card_type))
+    connection.commit()
+
+    credit_cardID = cursor.lastrowid
+
+    # Insert order information into the final_order table
+    order_insert_query = """
+    INSERT INTO final_order (cartID, date_created, status, ship_type, ship_address, credit_cardID)
+    VALUES (%s, %s, %s, %s, %s, %s)
+    """
+    cursor.execute(order_insert_query, (cartID, datetime.now().date(), 'new', ship_type, ship_address, credit_cardID))
+    connection.commit()
+
+    print("Order successfully submitted.")
+
+def validate_date_format(date_string, date_format):
+    try:
+        datetime.strptime(date_string, date_format)
+        return True
+    except ValueError:
+        return False
 
 def submitReview(cursor, connection):
     return
