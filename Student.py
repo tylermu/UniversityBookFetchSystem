@@ -124,14 +124,31 @@ def addStudent(cursor, connection):
 def shopBooks(cursor, connection):
     while True:
         
-        #list all books (search feature would have to go here)
-        query = """
-        SELECT b.isbn, b.book_title, GROUP_CONCAT(a.author_name) AS authors, b.price, b.edition, b.format
-        FROM book b
-        LEFT JOIN author a ON b.isbn = a.isbn
-        GROUP BY b.isbn
-        """
-        select_and_print(cursor, query, "Displaying data from the 'book' table", ["isbn", "book_title", "author", "price", "edition", "format"])
+        # Prompt user for search term
+        search_term = input("\nEnter your search term (title, author, category, subcategory, or keyword) or press Enter for all books: ")
+
+        # Construct the SQL query based on the search term
+        if search_term:
+            query = f"""
+            SELECT b.isbn, b.book_title, GROUP_CONCAT(a.author_name) AS authors, b.price, b.edition, b.format
+            FROM book b
+            LEFT JOIN author a ON b.isbn = a.isbn
+            LEFT JOIN book_keyword k ON b.isbn = k.isbn
+            WHERE b.book_title LIKE %s OR a.author_name LIKE %s OR b.category LIKE %s OR b.subcategory LIKE %s OR k.keyword_description LIKE %s
+            GROUP BY b.isbn
+            """
+            params = (f'%{search_term}%', f'%{search_term}%', f'%{search_term}%', f'%{search_term}%', f'%{search_term}%')
+        else:
+            query = """
+            SELECT b.isbn, b.book_title, GROUP_CONCAT(a.author_name) AS authors, b.price, b.edition, b.format
+            FROM book b
+            LEFT JOIN author a ON b.isbn = a.isbn
+            GROUP BY b.isbn
+            """
+            params = ()
+
+        # Display books based on the search
+        select_and_print(cursor, query, "Displaying search results", ["isbn", "book_title", "author", "price", "edition", "format"], params=params)
         
         #ask user if they want to add a book to their cart
         response = input("\nDo you want to add a book to cart (y/n)? ")

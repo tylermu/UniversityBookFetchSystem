@@ -31,12 +31,16 @@ def execute_query(cursor, query, values=None):
         print(f"Error executing query: {e}")
         raise
 
-def select_and_print(cursor, query, section_name, column_names=None):
-    execute_query(cursor, query)
+def select_and_print(cursor, query, section_name, column_names=None, params=None):
+    if params is not None:
+        execute_query(cursor, query, params)
+    else:
+        execute_query(cursor, query)
+
     result = cursor.fetchall()
 
     print(f"\n======= {section_name} =======")
-    
+
     if not result:
         print("No records found.")
         return
@@ -47,6 +51,7 @@ def select_and_print(cursor, query, section_name, column_names=None):
 
     for row in result:
         print("  ".join(str(val).ljust(width) for val, width in zip(row, column_widths)))
+
 
 def main():
 
