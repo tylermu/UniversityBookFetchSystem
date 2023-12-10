@@ -14,7 +14,7 @@ def connect_to_database():
             host="localhost",
             user="root",
             password=password, #Enter your password
-            database="cisc450project"
+            database="cisc450project2"
         )
         return connection
     except Error as e:
@@ -59,13 +59,14 @@ def main():
                 while True:
 
                     print("")
+                    print("Which user would you like to enter the database as?")
                     print("1. Student")
                     print("2. Customer Service Employee")
                     print("3. Administrator")
                     print("4. Super Administrator")
                     print("5. Quit Program")
+                    response = input("Enter number: ")
 
-                    response = input("Which user would you like to enter the database as? ")
                     if response == '1':
                         userPermissions = 'Student'
                         studentmain(cursor, connection)

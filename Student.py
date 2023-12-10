@@ -9,6 +9,7 @@ def studentmain(cursor, connection):
     while True:
     
         print("")
+        print("Which action are you performing?")
         print("1. Create Student Account")
         print("2. Shop for Books")
         print("3. View Cart")
@@ -17,24 +18,24 @@ def studentmain(cursor, connection):
         print("6. Create Trouble Ticket")
         print("7. Go Back")
 
-        response = input("Select an action: ")
+        response = input("Enter number: ")
         if response == '1':
             addStudent(cursor, connection)
         elif response == '2':
             #User wants to shop for books
-            shopBooks(cursor)
+            shopBooks(cursor, connection)
         elif response == '3':
             #User wants to view their cart
-            viewCart(cursor)
+            viewCart(cursor, connection)
         elif response == '4':
             #User wants to checkout
-            submitOrder(cursor)
+            submitOrder(cursor, connection)
         elif response == '5':
             #User wants to review a book they've purchased
-            submitReview(cursor)
+            submitReview(cursor, connection)
         elif response == '6':
             #User wants to file a complaint via the trouble ticket system
-            createTroubleTicket(cursor)
+            createTroubleTicket(cursor, connection)
         elif response == '7':
             break
         else:
@@ -120,9 +121,10 @@ def addStudent(cursor, connection):
     print("Student added successfully.")
 
 #function handles listing books and adding them to a cart
-def shopBooks(cursor):
+def shopBooks(cursor, connection):
     while True:
-        #list all books before prompting user if they want to add one to cart
+        
+        #list all books (search feature would have to go here)
         query = """
         SELECT b.isbn, b.book_title, GROUP_CONCAT(a.author_name) AS authors, b.price, b.edition, b.format
         FROM book b
@@ -130,50 +132,140 @@ def shopBooks(cursor):
         GROUP BY b.isbn
         """
         select_and_print(cursor, query, "Displaying data from the 'book' table", ["isbn", "book_title", "author", "price", "edition", "format"])
+        
+        #ask user if they want to add a book to their cart
         response = input("\nDo you want to add a book to cart (y/n)? ")
         if response.lower() != 'y':
             break
-        isbn = input("Select the isbn of the book you wish to add to cart: ")
 
         #Ensures that the ISBN entered exists in the database
+        isbn = input("Select the isbn of the book you wish to add to cart: ")
         query = f"SELECT COUNT(*) FROM book WHERE isbn = {isbn}"
         cursor.execute(query)
         count = cursor.fetchone()[0]
 
+        #If book exists in database
         if count > 0:
-            #Adds book to cart
+                
+            # Retrieve the price of the book for use later
+            query = f"SELECT price FROM book WHERE isbn = {isbn}"
+            cursor.execute(query)
+            price = cursor.fetchone()[0]
             
+            #loop to ensure purchase type is valid
             while True:
                 purchaseType = input("Enter purchase type (rent/buy): ")
                 if purchaseType.lower() in ['rent', 'buy']:
                     break
                 else:
                     print("Invalid purchase type. Please enter 'rent' or 'buy'.")
+
+            #loop to ensure quantity is valid
+            while True:
+                quantity = int(input("Enter quantity: "))
+                if quantity > 0:
+                    break
+                else:
+                    print("Invalid quantity. Please enter a quantity greater than 0")
             
+            #loop to ensure studentID is valid
             while True:
                 studentID = input("Enter your student ID: ")
                 query = f"SELECT COUNT(*) FROM student WHERE studentID = {studentID}"
                 cursor.execute(query)
                 count = cursor.fetchone()[0]
 
+                #if studentID exists, continue
                 if count > 0:
-                    #valid studentID and valid book, time to create cart if one does not exist
-                    print("hello")
-                    
+                    #check if cart exists
+                    query = f"SELECT cartID, total_cost FROM cart WHERE studentID = {studentID}"
+                    cursor.execute(query)
+                    cart_result = cursor.fetchall()
+
+                    #if cart exists, continue
+                    if cart_result:
+                            #print list of carts for user to choose which one to add book to
+                            select_and_print_cart_details(cursor, studentID)
+
+                            while True:
+                                cartID_input = input("Enter the cartID to add the book to: ")
+
+                                # Check if the entered cartID is valid
+                                if any(cartID_input == str(cart[0]) for cart in cart_result):
+                                    cartID = int(cartID_input)
+                                    total_cost = next(cart[1] for cart in cart_result if cart[0] == cartID)
+                                    break
+                                else:
+                                    print("Invalid cartID. Please enter a valid cartID.")
+
+                            #record adding book to add_book table
+                            insert_query = """
+                            INSERT INTO add_book (isbn, cartID, quantity, purchase_type)
+                            VALUES (%s, %s, %s, %s)
+                            ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)
+                            """
+
+                            cursor.execute(insert_query, (isbn, cartID, quantity, purchaseType))
+                            connection.commit()
+                            
+                            #update total_cost and date_updated
+                            total_cost += price * quantity
+                            date_updated = datetime.now().date()
+
+                            #record adding book to cart table
+                            update_query = """
+                            UPDATE cart
+                            SET total_cost = %s, date_updated = %s
+                            WHERE cartID = %s
+                            """
+                            cursor.execute(update_query, (total_cost, date_updated, cartID))
+                            connection.commit()
+
+                            print("Book successfully added to cart.")
+
+                            break
+                    else:
+                        #create new cart
+                        print("need to create cart")
                 else:
                     print("\nInvalid student ID. Please enter a valid student ID")
             break
+
+        #book does not exist in database, try again
         else:
             print("\nInvalid ISBN. Please enter a valid ISBN")
 
-def viewCart(cursor):
+#handles displaying all carts and contents for a given student
+def select_and_print_cart_details(cursor, studentID):
+    query = """
+    SELECT c.cartID, ab.quantity, b.book_title, b.price
+    FROM cart c
+    JOIN add_book ab ON c.cartID = ab.cartID
+    JOIN book b ON ab.isbn = b.isbn
+    WHERE c.studentID = %s
+    """
+    cursor.execute(query, (studentID,))
+    result = cursor.fetchall()
+
+    print("\n======= Cart Details =======")
+    column_names = ["cartID", "quantity", "book_title", "price"]
+    if not result:
+        print("No records found.")
+    else:
+        column_widths = [max(len(str(col)), max(len(str(row[i])) for row in result)) + 3 for i, col in enumerate(column_names)]
+        print("  ".join(col.ljust(width) for col, width in zip(column_names, column_widths)))
+
+        for row in result:
+            print("  ".join(str(val).ljust(width) for val, width in zip(row, column_widths)))
+
+def viewCart(cursor, connection):
     return
 
-def submitOrder(cursor):
+def submitOrder(cursor, connection):
     return
 
-def submitReview(cursor):
+def submitReview(cursor, connection):
     return
 
-def createTroubleTicket(cursor):
+def createTroubleTicket(cursor, connection):
     return
