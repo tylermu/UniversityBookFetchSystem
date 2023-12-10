@@ -103,21 +103,46 @@ VALUES	(1,	1),
         (3,	3);
 
 
-INSERT INTO book(isbn, book_title)
-VALUES	(1, 'English Made Easy Volume One: Learning English through Pictures'),
-		(2, 'McGraw-Hill Handbook of English Grammar and Usage'),
-        (3, 'Fearless Editing: Crafting Words and Images for Print, Web, and Public Relations'),
-        (4, 'The Development of Western Music: A History'),
-        (5, 'linear algebra'),
-        (6, 'Applied Econometrics'),
-        (7, 'Christianity 101: A Textbook of Catholic Theology'),
-        (8, 'Pearson Textbook Reader: Reading in Applied and Academic Fields'),
-        (9, 'Understanding Intercultural Communication'),
-        (10, 'Psychology'),
-        (11, 'Guyton and Hall Textbook of Medical Physiology'),
-        (12, 'Pearson Textbook Reader: Reading in Applied and Academic Fields'),
-        (13, 'Modern Operating Systems');
 
+INSERT INTO book(isbn, book_type, price, book_title, publisher, published_date, edition, language, format, category)
+VALUES (1, 'new', 55.50, 'English Made Easy Volume One: Learning English through Pictures', 'Houghton-Mifflin', '2021-05-04', 2, 'English', 'hardcover', 'academic'),
+	   (2, 'new', 35.50, 'McGraw-Hill Handbook of English Grammar and Usage', 'McGraw-Hill', '2021-05-04', 2, 'English', 'hardcover', 'academic'),
+	   (3, 'new', 47.50, 'Fearless Editing: Crafting Words and Images for Print, Web, and Public Relations', 'Houghton-Mifflin', '2022-05-04', 1, 'English', 'hardcover', 'academic'),
+       (4, 'new', 88.50, 'The Development of Western Music: A History', 'Houghton-Mifflin', '2020-05-04', 7, 'English', 'hardcover', 'academic'),
+	   (5, 'new', 74.50, 'linear algebra', 'McGraw-Hill', '2019-05-04', 3, 'English', 'hardcover', 'academic'),
+	   (6, 'new', 15.50, 'Applied Econometrics', 'Houghton-Mifflin', '2021-05-04', 2, 'English', 'hardcover', 'academic'),
+	   (7, 'new', 27.50, 'Christianity 101: A Textbook of Catholic Theology', 'McGraw-Hill', '2022-05-04', 1, 'English', 'hardcover', 'academic'),
+       (8, 'new', 48.50, 'Pearson Textbook Reader: Reading in Applied and Academic Fields', 'McGraw-Hill', '2020-05-04', 7, 'English', 'hardcover', 'academic'),
+	   (9, 'new', 64.50, 'Understanding Intercultural Communication', 'Houghton-Mifflin', '2019-05-04', 3, 'English', 'hardcover', 'academic'),
+	   (10, 'new', 95.50, 'Psychology', 'McGraw-Hill', '2021-05-04', 2, 'English', 'hardcover', 'academic'),
+	   (11, 'new', 17.50, 'Guyton and Hall Textbook of Medical Physiology', 'McGraw-Hill', '2022-05-04', 1, 'English', 'hardcover', 'academic'),
+       (12, 'new', 28.50, 'Pearson Textbook Reader: Reading in Applied and Academic Fields', 'McGraw-Hill', '2020-05-04', 7, 'English', 'hardcover', 'academic'),
+	   (13, 'new', 14.50, 'Modern Operating Systems', 'McGraw-Hill', '2019-05-04', 3, 'English', 'hardcover', 'academic'),
+	   (14, 'new', 65.50, 'Biology', 'McGraw-Hill', '2021-05-04', 2, 'English', 'hardcover', 'academic'),
+	   (15, 'new', 67.50, 'Chemistry', 'McGraw-Hill', '2022-05-04', 1, 'English', 'hardcover', 'academic'),
+       (16, 'new', 68.50, 'Physics', 'McGraw-Hill', '2020-05-04', 7, 'English', 'hardcover', 'academic'),
+	   (17, 'new', 64.50, 'Programming', 'McGraw-Hill', '2019-05-04', 3, 'English', 'hardcover', 'academic');
+
+INSERT INTO author(isbn, author_name)
+VALUES (1, 'Douglas Adams'),
+	   (1, 'John Green'),
+	   (2, 'Ernest Polk'),
+	   (3, 'Thomas Kenny'),
+       (4, 'Clancy Brown'),
+       (5, 'Dr. Lawrence'),
+	   (6, 'Douglas Adams'),
+	   (7, 'Thomas Kenny'),
+       (8, 'Clancy Brown'),
+       (9, 'Dr. Lawrence'),
+	   (10, 'Douglas Adams'),
+	   (11, 'Thomas Kenny'),
+       (12, 'Clancy Brown'),
+       (13, 'Dr. Lawrence'),
+	   (14, 'Douglas Adams'),
+	   (15, 'Thomas Kenny'),
+       (16, 'Clancy Brown'),
+       (17, 'Dr. Lawrence');
+       
 
 INSERT INTO cart(studentID, date_created, date_updated)
 VALUES	(2, '2014-10-02', '2014-10-03'),
@@ -203,8 +228,6 @@ VALUES	(8,	4,	4),
 		(9, 13,	4),
         (10, 13, 4.5),
         (11, 4,	3);
-
-
 
 
 

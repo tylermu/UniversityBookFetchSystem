@@ -4,7 +4,7 @@ from datetime import datetime
 
 def studentmain(cursor, connection):
 
-    print("Student Menu")
+    print(f"\n======= Student Menu =======")
     
     while True:
     
@@ -123,7 +123,13 @@ def addStudent(cursor, connection):
 def shopBooks(cursor):
     while True:
         #list all books before prompting user if they want to add one to cart
-        select_and_print(cursor, "SELECT isbn, book_title FROM book", "Displaying data from the 'book' table", ["isbn", "book_title"])
+        query = """
+        SELECT b.isbn, b.book_title, GROUP_CONCAT(a.author_name) AS authors, b.price, b.edition, b.format
+        FROM book b
+        LEFT JOIN author a ON b.isbn = a.isbn
+        GROUP BY b.isbn
+        """
+        select_and_print(cursor, query, "Displaying data from the 'book' table", ["isbn", "book_title", "author", "price", "edition", "format"])
         response = input("\nDo you want to add a book to cart (y/n)? ")
         if response.lower() != 'y':
             break
@@ -136,7 +142,27 @@ def shopBooks(cursor):
 
         if count > 0:
             #Adds book to cart
-            print("Adding book to cart...")
+            
+            while True:
+                purchaseType = input("Enter purchase type (rent/buy): ")
+                if purchaseType.lower() in ['rent', 'buy']:
+                    break
+                else:
+                    print("Invalid purchase type. Please enter 'rent' or 'buy'.")
+            
+            while True:
+                studentID = input("Enter your student ID: ")
+                query = f"SELECT COUNT(*) FROM student WHERE studentID = {studentID}"
+                cursor.execute(query)
+                count = cursor.fetchone()[0]
+
+                if count > 0:
+                    #valid studentID and valid book, time to create cart if one does not exist
+                    print("hello")
+                    
+                else:
+                    print("\nInvalid student ID. Please enter a valid student ID")
+            break
         else:
             print("\nInvalid ISBN. Please enter a valid ISBN")
 
