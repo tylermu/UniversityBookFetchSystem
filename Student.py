@@ -198,35 +198,47 @@ def shopBooks(cursor, connection):
                                 else:
                                     print("Invalid cartID. Please enter a valid cartID.")
 
-                            #record adding book to add_book table
-                            insert_query = """
-                            INSERT INTO add_book (isbn, cartID, quantity, purchase_type)
-                            VALUES (%s, %s, %s, %s)
-                            ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)
-                            """
-
-                            cursor.execute(insert_query, (isbn, cartID, quantity, purchaseType))
-                            connection.commit()
-                            
-                            #update total_cost and date_updated
-                            total_cost += price * quantity
-                            date_updated = datetime.now().date()
-
-                            #record adding book to cart table
-                            update_query = """
-                            UPDATE cart
-                            SET total_cost = %s, date_updated = %s
-                            WHERE cartID = %s
-                            """
-                            cursor.execute(update_query, (total_cost, date_updated, cartID))
-                            connection.commit()
-
-                            print("Book successfully added to cart.")
-
-                            break
                     else:
                         #create new cart
-                        print("need to create cart")
+                        insert_query = """
+                        INSERT INTO cart (total_cost, date_created, studentID)
+                        VALUES (%s, %s, %s)
+                        """   
+                        #create empty cart
+                        cursor.execute(insert_query, (0, datetime.now().date(), studentID))
+                        connection.commit()
+
+                        cartID = cursor.lastrowid
+                        print(f"New cart created with cartID: {cartID}")
+                        total_cost = 0
+
+                    #record adding book to add_book table
+                    insert_query = """
+                    INSERT INTO add_book (isbn, cartID, quantity, purchase_type)
+                    VALUES (%s, %s, %s, %s)
+                    ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)
+                    """
+
+                    cursor.execute(insert_query, (isbn, cartID, quantity, purchaseType))
+                    connection.commit()
+                    
+                    #update total_cost and date_updated
+                    total_cost += price * quantity
+                    date_updated = datetime.now().date()
+
+                    #record adding book to cart table
+                    update_query = """
+                    UPDATE cart
+                    SET total_cost = %s, date_updated = %s
+                    WHERE cartID = %s
+                    """
+                    cursor.execute(update_query, (total_cost, date_updated, cartID))
+                    connection.commit()
+
+                    print("Book successfully added to cart.")
+
+                    break
+
                 else:
                     print("\nInvalid student ID. Please enter a valid student ID")
             break
