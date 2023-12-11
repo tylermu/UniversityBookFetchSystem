@@ -1,4 +1,4 @@
-#removed import because it broke the app
+from sharedModule import select_and_print
 import re
 from datetime import datetime
 

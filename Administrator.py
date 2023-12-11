@@ -1,7 +1,4 @@
-try:
-    from Student import select_and_print as admin_select_and_print
-except ImportError:
-    admin_select_and_print = None
+from sharedModule import select_and_print
 
 def administratormain(cursor, connection):
     print(f"\n======= Administrator Menu =======")
@@ -80,7 +77,7 @@ def addUniversity(cursor, connection):
         else:
             print("Invalid name length. Please enter a name with 100 characters or fewer.")
 
-    admin_select_and_print(cursor, "SELECT universityID, departmentID FROM university_department", "Displaying data from the 'university_department' table", ["universityID", "departmentID"])
+    select_and_print(cursor, "SELECT universityID, departmentID FROM university_department", "Displaying data from the 'university_department' table", ["universityID", "departmentID"])
 
 
     #insert_query = """
@@ -92,4 +89,3 @@ def addUniversity(cursor, connection):
     #connection.commit()
 
     #print("Added university with the name: " + universityName)
-

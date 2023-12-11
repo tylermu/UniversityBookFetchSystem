@@ -1,4 +1,4 @@
-from Main import connect_to_database, select_and_print
+from sharedModule import connect_to_database, select_and_print
 import re
 from datetime import datetime
 
