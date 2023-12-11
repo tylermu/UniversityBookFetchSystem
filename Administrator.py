@@ -69,9 +69,8 @@ def addUniversity(cursor, connection):
     response = input("\nDo you want to add a new university to the system (y/n)? ")
     if response.lower() != 'y':
         return
-    
-    print("")
-    print("This is NOT a transaction. Please do not exit this process until complete..")
+
+    print("\nThis is NOT a transaction. Please do not exit this process until complete..")
     print("")
 
     while True:
@@ -85,34 +84,37 @@ def addUniversity(cursor, connection):
     INSERT INTO university (university_name)
     VALUES (%s)
     """
-    cursor.execute(insert_query, (universityName))
-    connection.commit()
+    #cursor.execute(insert_query, (universityName))
+    #connection.commit()
 
+    print("\nHere are the current departments")
     select_and_print(cursor, "SELECT departmentID, dep_name FROM department", "Displaying data from the 'department' table", ["departmentID", "dep_name"])
-
     response = input("\nDo you want to add a new department to the system (y/n)? ")
     if response.lower() == 'y':
         addDepartment(cursor, connection)
 
+    print("\nHere are the current departments")
+    select_and_print(cursor, "SELECT departmentID, dep_name FROM department", "Displaying data from the 'department' table", ["departmentID", "dep_name"])
+
     while True:
-        print("")
         print("Enter the departments you would like to associate to " + universityName)
-        departments = input("Put them in a comma seperated list like '1,2,3': ")
-        if is_comma_separated_list(departments) is True:
-            break
-        else:
-            print("Please put the departments in a comma seperated list with NO SPACES like: 1,2,3")
-    
-    while True:
-        print("")
-        print("Enter the departments you would like to associate to " + universityName)
-        departments = input("Put them in a comma seperated list like '1,2,3': ")
+        departments = input("Put them in a comma seperated list like '1,2,3' with NO spaces: ")
         if is_comma_separated_list(departments) is True:
             break
         else:
             print("Please put the departments in a comma seperated list with NO SPACES like: 1,2,3")
 
     departments_list = [(department) for department in departments.split(',')] #all the dept numbers in departments_list
+
+    for each in departments_list:
+        while True:
+            response = input("Would you like to add a course for dept with deptID " + each + " (y/n)?")
+            if response == 'y':
+                addCourse(cursor, connection, each)
+            else:
+                break
+
+
     
 
 
@@ -127,7 +129,7 @@ def addUniversity(cursor, connection):
     #print("Added university with the name: " + universityName)
 
 def addDepartment(cursor, connection):
-    print("Here are the departments currently in the system: ")
+    print("Here are the current departments:")
     select_and_print(cursor, "SELECT departmentID, dep_name FROM department", "Displaying data from the 'department' table", ["departmentID", "dep_name"])
     while True:
         new_department = input("Enter the name of the department you want to add: ")
@@ -136,10 +138,31 @@ def addDepartment(cursor, connection):
         else:
             print("Please put the name of the department you want to add")
     while True:
-        new_department = input("Enter the name of the department you want to add: ")
-        if len(new_department) < 100:
+        depID = input("Enter the departmentID for the department: ")
+        if int(depID) > 1:
             break
         else:
-            print("Please put the name of the department you want to add")
+            print("Please enter an integer for the departmentID")
     
-    print("")
+    insert_query = """
+    INSERT INTO department (departmentID, dep_name)
+    VALUES (%s, %s)
+    """
+    cursor.execute(insert_query, (depID, new_department))
+    connection.commit()
+
+    print(new_department + " has been added")
+    redo = input("Would you like to add another dept (y/n)?")
+    if redo == 'y':
+        addDepartment(cursor, connection)
+    else: 
+        return
+
+def addCourse(cursor, connection, deptID):
+    while True:
+        courseName = input("Enter the name of the course: ")
+        if len(courseName) < 100:
+            break
+        else:
+            print("Please enter a valid course name with less than 100 characters")
+    #ended here

@@ -48,5 +48,5 @@ def select_and_print(cursor, query, section_name, column_names=None, params=None
         print("  ".join(str(val).ljust(width) for val, width in zip(row, column_widths)))
 
 def is_comma_separated_list(s):
-    pattern = re.compile(r'^\s*\w+(\s*,\s*\w+)*\s*$')
+    pattern = re.compile(r'^\s*\d+(\s*,\s*\d+)*\s*$')
     return bool(pattern.match(s))
