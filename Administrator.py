@@ -1,4 +1,4 @@
-from sharedModule import select_and_print
+from sharedModule import select_and_print, is_comma_separated_list
 
 def administratormain(cursor, connection):
     print(f"\n======= Administrator Menu =======")
@@ -70,6 +70,10 @@ def addUniversity(cursor, connection):
     if response.lower() != 'y':
         return
     
+    print("")
+    print("This is NOT a transaction. Please do not exit this process until complete..")
+    print("")
+
     while True:
         universityName = input("Enter the name of the university you wish to add: ")
         if len(universityName) <= 100:
@@ -77,7 +81,39 @@ def addUniversity(cursor, connection):
         else:
             print("Invalid name length. Please enter a name with 100 characters or fewer.")
 
-    select_and_print(cursor, "SELECT universityID, departmentID FROM university_department", "Displaying data from the 'university_department' table", ["universityID", "departmentID"])
+    insert_query = """
+    INSERT INTO university (university_name)
+    VALUES (%s)
+    """
+    cursor.execute(insert_query, (universityName))
+    connection.commit()
+
+    select_and_print(cursor, "SELECT departmentID, dep_name FROM department", "Displaying data from the 'department' table", ["departmentID", "dep_name"])
+
+    response = input("\nDo you want to add a new department to the system (y/n)? ")
+    if response.lower() == 'y':
+        addDepartment(cursor, connection)
+
+    while True:
+        print("")
+        print("Enter the departments you would like to associate to " + universityName)
+        departments = input("Put them in a comma seperated list like '1,2,3': ")
+        if is_comma_separated_list(departments) is True:
+            break
+        else:
+            print("Please put the departments in a comma seperated list with NO SPACES like: 1,2,3")
+    
+    while True:
+        print("")
+        print("Enter the departments you would like to associate to " + universityName)
+        departments = input("Put them in a comma seperated list like '1,2,3': ")
+        if is_comma_separated_list(departments) is True:
+            break
+        else:
+            print("Please put the departments in a comma seperated list with NO SPACES like: 1,2,3")
+
+    departments_list = [(department) for department in departments.split(',')] #all the dept numbers in departments_list
+    
 
 
     #insert_query = """
@@ -89,3 +125,21 @@ def addUniversity(cursor, connection):
     #connection.commit()
 
     #print("Added university with the name: " + universityName)
+
+def addDepartment(cursor, connection):
+    print("Here are the departments currently in the system: ")
+    select_and_print(cursor, "SELECT departmentID, dep_name FROM department", "Displaying data from the 'department' table", ["departmentID", "dep_name"])
+    while True:
+        new_department = input("Enter the name of the department you want to add: ")
+        if len(new_department) < 100:
+            break
+        else:
+            print("Please put the name of the department you want to add")
+    while True:
+        new_department = input("Enter the name of the department you want to add: ")
+        if len(new_department) < 100:
+            break
+        else:
+            print("Please put the name of the department you want to add")
+    
+    print("")
