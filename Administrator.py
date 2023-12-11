@@ -165,4 +165,41 @@ def addCourse(cursor, connection, deptID):
             break
         else:
             print("Please enter a valid course name with less than 100 characters")
-    #ended here
+
+    while True:
+        courseID = input("Enter the ID for the course: ")
+        if int(courseID) >= 1:
+            break
+        else:
+            print("Please enter a valid courseID")
+
+    #loop to ensure adminID is valid
+    while True:
+        adminID = input("Enter your admin ID: ")
+        query = f"SELECT COUNT(*) FROM administrator WHERE admin_employeeID = {adminID}"
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+
+        #if adminID exists, continue
+        if count > 0:
+            break
+        else:
+            print("Invalid ID. Please input a valid adminID")
+    
+    insert_query = """
+    INSERT INTO course (courseID, course_name,  departmentID, admin_employeeID)
+    VALUES (%s, %s, %s, %s)
+    """
+    cursor.execute(insert_query, (courseID, courseName, deptID, adminID))
+    connection.commit()
+
+    print("Course added successfully")
+
+    while True:
+        response = input("Would you like to add another course (y/n)?")
+        if response != 'y':
+            break
+        else:
+            addCourse(cursor, connection, deptID)
+    
+    return
