@@ -79,7 +79,7 @@ def createTicket(cursor, connection):
                 dateLogged = None
                 break
         if re.match('^\d{4}-\d{2}-\d{2}$', dateLogged) is not None:
-            dateLogged_obj = datetime.strptime(birthdate, '%Y-%m-%d')
+            dateLogged_obj = datetime.strptime(dateLogged, '%Y-%m-%d')
             if dateLogged_obj > datetime(2023, 1, 1):
                 break
             else:
