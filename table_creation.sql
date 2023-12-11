@@ -243,6 +243,7 @@
 		total_cost DECIMAL(8,2), 
 		date_created DATE, 
 		date_updated DATE, 
+        date_completed DATE,
 		studentID MEDIUMINT UNSIGNED NOT NULL,
 		foreign key (studentID) references student(studentID)
 			ON UPDATE CASCADE 
@@ -307,9 +308,5 @@
 			ON UPDATE CASCADE 
 			ON DELETE CASCADE
 	);
-
-
-
-
 
 

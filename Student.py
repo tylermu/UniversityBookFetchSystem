@@ -13,9 +13,10 @@ def studentmain(cursor, connection):
         print("1. Create Student Account")
         print("2. Shop for Books")
         print("3. View Carts and Checkout")
-        print("4. Submit Book Review")
-        print("5. Create Trouble Ticket")
-        print("6. Go Back")
+        print("4. Manage Orders")
+        print("5. Submit Book Review")
+        print("6. Create Trouble Ticket")
+        print("7. Go Back")
 
         response = input("Enter number: ")
         if response == '1':
@@ -27,12 +28,15 @@ def studentmain(cursor, connection):
             #User wants to view their cart
             viewCart(cursor, connection)
         elif response == '4':
+            #User wants to manage their order
+            manageOrder(cursor, connection)
+        elif response == '5':
             #User wants to review a book they've purchased
             submitReview(cursor, connection)
-        elif response == '5':
+        elif response == '6':
             #User wants to file a complaint via the trouble ticket system
             createTroubleTicket(cursor, connection)
-        elif response == '6':
+        elif response == '7':
             break
         else:
             print("\nInvalid choice, try again")
@@ -190,40 +194,30 @@ def shopBooks(cursor, connection):
 
                 #if studentID exists, continue
                 if count > 0:
-                    #check if cart exists
-                    query = f"SELECT cartID, total_cost FROM cart WHERE studentID = {studentID}"
+                    
+                    # check if there is any active cart (cart with null date_completed)
+                    query = f"SELECT cartID, total_cost FROM cart WHERE studentID = {studentID} AND date_completed IS NULL"
                     cursor.execute(query)
-                    cart_result = cursor.fetchall()
+                    active_carts = cursor.fetchall()
 
-                    #if cart exists, continue
-                    if cart_result:
-                            #print list of carts for user to choose which one to add book to
-                            select_and_print_cart_details(cursor, studentID)
-
-                            while True:
-                                cartID_input = input("Enter the cartID to add the book to: ")
-
-                                # Check if the entered cartID is valid
-                                if any(cartID_input == str(cart[0]) for cart in cart_result):
-                                    cartID = int(cartID_input)
-                                    total_cost = next(cart[1] for cart in cart_result if cart[0] == cartID)
-                                    break
-                                else:
-                                    print("Invalid cartID. Please enter a valid cartID.")
-
+                    # if an active cart exists, use it; otherwise, create a new cart
+                    if active_carts:
+                        cartID = active_carts[0][0]
+                        
+                        query_total_cost = f"SELECT total_cost FROM cart WHERE cartID = {cartID}"
+                        cursor.execute(query_total_cost)
+                        total_cost = cursor.fetchone()[0]
                     else:
-                        #create new cart
                         insert_query = """
                         INSERT INTO cart (total_cost, date_created, studentID)
                         VALUES (%s, %s, %s)
-                        """   
-                        #create empty cart
+                        """
                         cursor.execute(insert_query, (0, datetime.now().date(), studentID))
                         connection.commit()
 
                         cartID = cursor.lastrowid
-                        print(f"New cart created with cartID: {cartID}")
                         total_cost = 0
+                        print(f"New cart created with cartID: {cartID}")
 
                     #record adding book to add_book table
                     insert_query = """
@@ -284,63 +278,49 @@ def select_and_print_cart_details(cursor, studentID):
             print("  ".join(str(val).ljust(width) for val, width in zip(row, column_widths)))
 
 def viewCart(cursor, connection):
-    #Ensure valid studentID
+    # Ensure valid studentID
     while True:
         studentID = input("Enter your student ID: ")
         query = f"SELECT COUNT(*) FROM student WHERE studentID = {studentID}"
         cursor.execute(query)
         count = cursor.fetchone()[0]
 
-        #if studentID exists, continue
+        # if studentID exists, continue
         if count > 0:
-            #check if cart exists
-            query = f"SELECT cartID, total_cost FROM cart WHERE studentID = {studentID}"
+            # check if there is any active cart (cart with null date_completed)
+            query = f"SELECT cartID FROM cart WHERE studentID = {studentID} AND date_completed IS NULL"
             cursor.execute(query)
-            cart_result = cursor.fetchall()
+            active_carts = cursor.fetchall()
 
-            if cart_result:
-                    #print list of carts for user to choose to interact with
-                    select_and_print_cart_details(cursor, studentID)
+            if active_carts:
+                cartID = active_carts[0][0]
+                empty_check = display_cart_contents(cursor, cartID)
+                if empty_check == "empty":
+                    break
 
-                    while True:
-                        continue_input = input("Do you want to view a cart in detail (y/n)? ")
-                        if continue_input.lower() != 'y':
-                            break
+                while True:
+                    print("Which action are you performing?")
+                    print("1. Delete item from the cart")
+                    print("2. Checkout")
+                    print("3. Go Back")
 
-                        cartID_input = input("Enter the cartID of the cart to view in detail: ")
+                    response = input("Enter number: ")
+                    if response == '1':
+                        deleted_item_isbn = input("Enter the isbn of the book you wish to delete from your cart: ")
+                        delete_book_from_cart(cursor, connection, cartID, deleted_item_isbn)
+                    elif response == '2':
+                        submitOrder(cursor, connection, cartID)
+                    elif response == '3':
+                        # User wants to exit
+                        break
+                    else:
+                        print("\nInvalid choice, try again")
 
-                        # Check if the entered cartID is valid
-                        if any(cartID_input == str(cart[0]) for cart in cart_result):
-                            cartID = int(cartID_input)
-                            display_cart_contents(cursor, cartID)
-
-                            while True:
-
-                                print("Which action are you performing?")
-                                print("1. Delete item from the cart")
-                                print("2. Checkout")
-                                print("3. Go Back")
-
-                                response = input("Enter number: ")
-                                if response == '1':
-                                    deleted_item_isbn = input("Enter the isbn of the book you wish to delete from your cart: ")
-                                    delete_book_from_cart(cursor, connection, cartID, deleted_item_isbn)
-                                elif response == '2':
-                                    submitOrder(cursor, connection, cartID)
-                                elif response == '3':
-                                    #User wants to exit
-                                    break
-                                else:
-                                    print("\nInvalid choice, try again")
-
-                                break
-                        else:
-                            print("Invalid cartID. Please enter a valid cartID.")
-                        
-
+                    break
             else:
-                print("\nYou do not have any carts")
-            
+                print("\nYou do not have any active carts. Create a new cart by shopping for books.")
+                return
+
             break
 
         else:
@@ -360,6 +340,7 @@ def display_cart_contents(cursor, cartID):
     column_names = ["quantity", "book_title", "isbn", "price"]
     if not result:
         print("The cart is empty.")
+        return "empty"
     else:
         column_widths = [max(len(str(col)), max(len(str(row[i])) for row in result)) + 3 for i, col in enumerate(column_names)]
         print("  ".join(col.ljust(width) for col, width in zip(column_names, column_widths)))
@@ -442,6 +423,11 @@ def submitOrder(cursor, connection, cartID):
     cursor.execute(order_insert_query, (cartID, datetime.now().date(), 'new', ship_type, ship_address, credit_cardID))
     connection.commit()
 
+    # Update the date_completed attribute of the cart
+    update_cart_query = "UPDATE cart SET date_completed = %s WHERE cartID = %s"
+    cursor.execute(update_cart_query, (datetime.now().date(), cartID))
+    connection.commit()
+
     print("Order successfully submitted.")
 
 def validate_date_format(date_string, date_format):
@@ -450,6 +436,9 @@ def validate_date_format(date_string, date_format):
         return True
     except ValueError:
         return False
+    
+def manageOrder(cursor, connection):
+    return
 
 def submitReview(cursor, connection):
     return
