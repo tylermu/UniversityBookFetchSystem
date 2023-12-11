@@ -438,7 +438,93 @@ def validate_date_format(date_string, date_format):
         return False
     
 def manageOrder(cursor, connection):
-    return
+    while True:
+        # Ensure valid studentID
+        studentID = input("Enter your student ID: ")
+        query = f"SELECT COUNT(*) FROM student WHERE studentID = {studentID}"
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+
+        # if studentID exists, continue
+        if count > 0:
+
+            # Check if there are no orders for the student
+            if not has_orders_for_student(cursor, studentID):
+                print("\nYou do not have any orders.")
+                return
+            
+            # Display orders associated with the student's carts
+            display_orders_for_student(cursor, studentID)
+
+
+
+            # Provide options to the user
+            while True:
+                print("Which action are you performing?")
+                print("1. Cancel an Order")
+                print("2. Go Back")
+
+                response = input("Enter number: ")
+                if response == '1':
+                    orderID_to_cancel = input("Enter the Order ID of the order you wish to cancel: ")
+                    cancel_order(cursor, connection, orderID_to_cancel)
+                elif response == '2':
+                    # User wants to go back
+                    return
+                else:
+                    print("\nInvalid choice, try again")
+
+        else:
+            print("\nInvalid student ID. Please enter a valid student ID")
+
+
+def display_orders_for_student(cursor, studentID):
+    query = """
+    SELECT fo.orderID, c.cartID, c.total_cost, fo.date_created, fo.date_completed, fo.ship_type, fo.status
+    FROM final_order fo
+    JOIN cart c ON fo.cartID = c.cartID
+    WHERE c.studentID = %s AND fo.status != 'canceled'
+    """
+    cursor.execute(query, (studentID,))
+    result = cursor.fetchall()
+
+    print("\n======= Orders =======")
+    column_names = ["orderID", "cartID", "total_cost", "date_created", "date_completed", "ship_type", "status"]
+    if not result:
+        print("No orders found.")
+    else:
+        column_widths = [max(len(str(col)), max(len(str(row[i])) for row in result)) + 3 for i, col in enumerate(column_names)]
+        print("  ".join(col.ljust(width) for col, width in zip(column_names, column_widths)))
+
+        for row in result:
+            print("  ".join(str(val).ljust(width) for val, width in zip(row, column_widths)))
+
+def has_orders_for_student(cursor, studentID):
+    query = "SELECT COUNT(*) FROM final_order fo JOIN cart c ON fo.cartID = c.cartID WHERE c.studentID = %s AND fo.status != 'canceled'"
+    cursor.execute(query, (studentID,))
+    count = cursor.fetchone()[0]
+    return count > 0
+
+
+def cancel_order(cursor, connection, orderID):
+    # Check if the orderID exists and has a status other than 'canceled'
+    query = "SELECT status FROM final_order WHERE orderID = %s"
+    cursor.execute(query, (orderID,))
+    result = cursor.fetchone()
+
+    if result:
+        status = result[0]
+        if status != 'canceled':
+            # Update the status of the order to 'canceled'
+            update_query = "UPDATE final_order SET status = 'canceled' WHERE orderID = %s"
+            cursor.execute(update_query, (orderID,))
+            connection.commit()
+            print("Order successfully canceled.")
+        else:
+            print("This order has already been canceled.")
+    else:
+        print("Invalid Order ID. The order does not exist.")
+
 
 def submitReview(cursor, connection):
     return
