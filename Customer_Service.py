@@ -1,4 +1,4 @@
-from Main import connect_to_database, select_and_print
+#removed import because it broke the app
 import re
 from datetime import datetime
 
