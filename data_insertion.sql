@@ -48,29 +48,33 @@ VALUES	('Joan'),
         ('Dan'),
         ('Kevin');
 
-INSERT INTO administrator(admin_first_name)
-VALUES	('Stephanie'), 
-		('Peter'),
-        ('Anthony');
+-- added
+INSERT INTO administrator(admin_first_name, admin_last_name, salary)
+VALUES	('Stephanie', 'Smith', 65000), 
+		('Peter', 'Levick', 80000),
+        ('Anthony', 'Carl', 67000);
 
-INSERT INTO trouble_ticket(ticketID, trouble_category, date_logged, cs_employeeID, ticket_title, prob_desc, fixed_desc,	status,  a_employeeID, studentID)
-VALUES	(121,	'userprofile',	'2014-10-24',	1, 'forgotten password',	'password needs to be reset after verification', NULL, 'new', NULL,	7),
-		(120,	'products', '2014-08-31', 	1, 	'pages missing from the book', 'chapter 5 of the book i ordered is missing', NULL,	'new', NULL, 15),
-		(101,	'userprofile',	'2014-07-15',	2,	'unable to log in',	'password reset needed', NULL, 	'new', NULL, 20),
-		(102,	'products',	'2014-08-23',	3,	'bad / damaged product recieved', NULL, NULL, 'new', NULL,	21),
-		(114,	'userprofile',	'2014-09-05',	3,	'unable to edit details on profile', NULL, NULL, 'new', NULL, 21),
-		(104,	'orders',	'2014-10-05',	3,	'order not recieved',	'i have still not recieved my order. it has been 10 days',	NULL,	'new', NULL,	14),
-		(103,	'cart',	'2014-02-04',	3,	'cart not updating',	'cant delete stuff from the cart', NUll, 'new', NULL, 23),
-		(103,	'cart',	'2014-02-05',	3,	'cart not updating',	'cant delete stuff from the cart',	NULL, 'assigned',	1, 23),
-		(106,	'userprofile',	'2014-08-05',	3,	'password lost', NULL, NULL, 'new', NULL, 29),
-		(106,	'userprofile',	'2014-08-06',	3,	'password lost', NULL, NULL, 'assigned',	1,	29),
-		(106,	'userprofile',	'2014-08-07',	3,	'password lost', NULL, NULL, 'in-process',	1,	29),
-		(106,	'userprofile',	'2014-08-08',	3,	'password lost', 	'pasword was reset', 'new password issued',	'completed',	1,	29),
-		(103,	'cart',	'2014-02-06',	3,	'cart not updating',	'cant delete stuff from the cart', NULL, 'in-process',	1,	23),
-		(121,	'userprofile',	'2014-10-25',	1,	'forgotten password',	'password needs to be reset after verification', NULL,	'assigned',	2,	7),
-		(100,	'orders',	'2014-10-24',	4, 'bug in orders',	'1 order got cancelled automatically', NULL, 'new', NULL, NULL),
-		(100,	'orders',	'2014-10-24',	4, 'bug in orders',	'1 order got cancelled automatically', NULL,	'assigned', 3, NULL),
-		(130,	'cart',	'2014-12-01',	5,	'proposed maintance work',	'yearly update scheduled', NULL, 'new', NULL, NULL);			
+-- edited 
+INSERT INTO trouble_ticket(ticketID, trouble_category, date_logged, date_completed, cs_employeeID, ticket_title, prob_desc, fixed_desc,	status,  a_employeeID, studentID)
+VALUES	(121,	'userprofile',	'2014-10-24',	NULL, 1, 'forgotten password',	'password needs to be reset after verification', NULL, 'new', NULL,	7),
+		(120,	'products', '2014-08-31', 	NULL, 1, 	'pages missing from the book', 'chapter 5 of the book i ordered is missing', NULL,	'new', NULL, 15),
+		(101,	'userprofile',	'2014-07-15',	NULL, 2,	'unable to log in',	'password reset needed', NULL, 	'new', NULL, 20),
+		(102,	'products',	'2014-08-23',	NULL, 3,	'bad / damaged product recieved', NULL, NULL, 'new', NULL,	21),
+		(114,	'userprofile',	'2014-09-05',	NULL, 3,	'unable to edit details on profile', NULL, NULL, 'new', NULL, 21),
+		(104,	'orders',	'2014-10-05',	NULL, 3,	'order not recieved',	'i have still not recieved my order. it has been 10 days',	NULL,	'new', NULL,	14),
+		(103,	'cart',	'2014-02-04',	NULL, 3,	'cart not updating',	'cant delete stuff from the cart', NUll, 'new', NULL, 23),
+		(103,	'cart',	'2014-02-05',	NULL, 3,	'cart not updating',	'cant delete stuff from the cart',	NULL, 'assigned',	1, 23),
+		(106,	'userprofile',	'2014-08-05',	NULL, 3,	'password lost', NULL, NULL, 'new', NULL, 29),
+		(106,	'userprofile',	'2014-08-06',	NULL, 3,	'password lost', NULL, NULL, 'assigned',	1,	29),
+		(106,	'userprofile',	'2014-08-07',	NULL, 3,	'password lost', NULL, NULL, 'in-process',	1,	29),
+		(106,	'userprofile',	'2014-08-08',	'2014-08-11', 3,	'password lost', 	'pasword was reset', 'new password issued',	'completed',	1,	29),
+		(103,	'cart',	'2014-02-06',	NULL, 3,	'cart not updating',	'cant delete stuff from the cart', NULL, 'in-process',	1,	23),
+		(121,	'userprofile',	'2014-10-25',	NULL, 1,	'forgotten password',	'password needs to be reset after verification', NULL,	'assigned',	2,	7),
+		(100,	'orders',	'2014-10-24',	NULL, 4, 'bug in orders',	'1 order got cancelled automatically', NULL, 'new', NULL, NULL),
+		(100,	'orders',	'2014-10-24',	NULL, 4, 'bug in orders',	'1 order got cancelled automatically', NULL,	'assigned', 3, NULL),
+		(130,	'cart',	'2014-12-01',	NULL, 5,	'proposed maintance work',	'yearly update scheduled', NULL, 'new', NULL, NULL),
+        (121,	'userprofile',	'2014-10-25',	'2014-10-26', 1,	'forgotten password',	'password needs to be reset after verification', 'password reset',	'completed',	2,	7);
+		
 
 
 INSERT INTO investigates(ticketID, employeeID)
@@ -90,7 +94,8 @@ INSERT INTO department(dep_name)
 VALUES 	('English'),
 		('Computer Science'),
         ('History'),
-        ('Sociology');
+        ('Sociology'),
+        ('Math');
 
 
 INSERT INTO university_department(universityID, departmentID)
@@ -100,28 +105,35 @@ VALUES	(1,	1),
         (2,	3),
         (2,	4),
         (3, 4),
-        (3,	3);
+        (3,	3),
+        (2, 5);
 
 
+-- added subcategory
+INSERT INTO book(isbn, book_type, price, book_title, publisher, published_date, edition, language, format, category, subcategory)
+VALUES (1, 'new', 55.50, 'English Made Easy Volume One: Learning English through Pictures', 'Houghton-Mifflin', '2021-05-04', 2, 'English', 'hardcover', 'academic', 'English'),
+	   (2, 'new', 35.50, 'McGraw-Hill Handbook of English Grammar and Usage', 'McGraw-Hill', '2021-05-04', 2, 'English', 'hardcover', 'academic', 'English'),
+	   (3, 'new', 47.50, 'Fearless Editing: Crafting Words and Images for Print, Web, and Public Relations', 'Houghton-Mifflin', '2022-05-04', 1, 'English', 'hardcover', 'academic', 'English'),
+       (4, 'new', 88.50, 'The Development of Western Music: A History', 'Houghton-Mifflin', '2020-05-04', 7, 'English', 'hardcover', 'academic', 'Music'),
+	   (5, 'new', 74.50, 'linear algebra', 'McGraw-Hill', '2019-05-04', 3, 'English', 'hardcover', 'academic', 'Math'),
+	   (6, 'new', 15.50, 'Applied Econometrics', 'Houghton-Mifflin', '2021-05-04', 2, 'English', 'hardcover', 'academic', 'Economics'),
+	   (7, 'new', 27.50, 'Christianity 101: A Textbook of Catholic Theology', 'McGraw-Hill', '2022-05-04', 1, 'English', 'hardcover', 'academic', 'Theology'),
+       (8, 'new', 48.50, 'Pearson Textbook Reader: Reading in Applied and Academic Fields', 'McGraw-Hill', '2020-05-04', 7, 'English', 'hardcover', 'academic', 'Enlish'),
+	   (9, 'new', 64.50, 'Understanding Intercultural Communication', 'Houghton-Mifflin', '2019-05-04', 3, 'English', 'hardcover', 'academic', 'Communciation'),
+	   (10, 'new', 95.50, 'Psychology', 'McGraw-Hill', '2021-05-04', 2, 'English', 'hardcover', 'academic', 'Psychology'),
+	   (11, 'new', 17.50, 'Guyton and Hall Textbook of Medical Physiology', 'McGraw-Hill', '2022-05-04', 1, 'English', 'hardcover', 'academic', 'Medicine'),
+       (12, 'new', 28.50, 'Pearson Textbook Reader: Reading in Applied and Academic Fields', 'McGraw-Hill', '2020-05-04', 7, 'English', 'hardcover', 'academic', 'English'),
+	   (13, 'new', 14.50, 'Modern Operating Systems', 'McGraw-Hill', '2019-05-04', 3, 'English', 'hardcover', 'academic', 'Computer Science'),
+	   (14, 'new', 65.50, 'Biology', 'McGraw-Hill', '2021-05-04', 2, 'English', 'hardcover', 'academic', 'Biology'),
+	   (15, 'new', 67.50, 'Chemistry', 'McGraw-Hill', '2022-05-04', 1, 'English', 'hardcover', 'academic', 'Chemistry'),
+       (16, 'new', 68.50, 'Physics', 'McGraw-Hill', '2020-05-04', 7, 'English', 'hardcover', 'academic', 'Physics'),
+	   (17, 'new', 64.50, 'Programming', 'McGraw-Hill', '2019-05-04', 3, 'English', 'hardcover', 'academic', 'Programming');
 
-INSERT INTO book(isbn, book_type, price, book_title, publisher, published_date, edition, language, format, category)
-VALUES (1, 'new', 55.50, 'English Made Easy Volume One: Learning English through Pictures', 'Houghton-Mifflin', '2021-05-04', 2, 'English', 'hardcover', 'academic'),
-	   (2, 'new', 35.50, 'McGraw-Hill Handbook of English Grammar and Usage', 'McGraw-Hill', '2021-05-04', 2, 'English', 'hardcover', 'academic'),
-	   (3, 'new', 47.50, 'Fearless Editing: Crafting Words and Images for Print, Web, and Public Relations', 'Houghton-Mifflin', '2022-05-04', 1, 'English', 'hardcover', 'academic'),
-       (4, 'new', 88.50, 'The Development of Western Music: A History', 'Houghton-Mifflin', '2020-05-04', 7, 'English', 'hardcover', 'academic'),
-	   (5, 'new', 74.50, 'linear algebra', 'McGraw-Hill', '2019-05-04', 3, 'English', 'hardcover', 'academic'),
-	   (6, 'new', 15.50, 'Applied Econometrics', 'Houghton-Mifflin', '2021-05-04', 2, 'English', 'hardcover', 'academic'),
-	   (7, 'new', 27.50, 'Christianity 101: A Textbook of Catholic Theology', 'McGraw-Hill', '2022-05-04', 1, 'English', 'hardcover', 'academic'),
-       (8, 'new', 48.50, 'Pearson Textbook Reader: Reading in Applied and Academic Fields', 'McGraw-Hill', '2020-05-04', 7, 'English', 'hardcover', 'academic'),
-	   (9, 'new', 64.50, 'Understanding Intercultural Communication', 'Houghton-Mifflin', '2019-05-04', 3, 'English', 'hardcover', 'academic'),
-	   (10, 'new', 95.50, 'Psychology', 'McGraw-Hill', '2021-05-04', 2, 'English', 'hardcover', 'academic'),
-	   (11, 'new', 17.50, 'Guyton and Hall Textbook of Medical Physiology', 'McGraw-Hill', '2022-05-04', 1, 'English', 'hardcover', 'academic'),
-       (12, 'new', 28.50, 'Pearson Textbook Reader: Reading in Applied and Academic Fields', 'McGraw-Hill', '2020-05-04', 7, 'English', 'hardcover', 'academic'),
-	   (13, 'new', 14.50, 'Modern Operating Systems', 'McGraw-Hill', '2019-05-04', 3, 'English', 'hardcover', 'academic'),
-	   (14, 'new', 65.50, 'Biology', 'McGraw-Hill', '2021-05-04', 2, 'English', 'hardcover', 'academic'),
-	   (15, 'new', 67.50, 'Chemistry', 'McGraw-Hill', '2022-05-04', 1, 'English', 'hardcover', 'academic'),
-       (16, 'new', 68.50, 'Physics', 'McGraw-Hill', '2020-05-04', 7, 'English', 'hardcover', 'academic'),
-	   (17, 'new', 64.50, 'Programming', 'McGraw-Hill', '2019-05-04', 3, 'English', 'hardcover', 'academic');
+-- added 
+INSERT INTO book_keyword(isbn, keyword_description)
+VALUES (2, 'grammer'), (5, 'algebra'), (13, 'programming'), (13, 'operating systems'), (17, 'programming'), (1, 'grammar'), (3, 'editing'), (3, 'grammar'),
+		(12, 'reading'), (12, 'grammar');
+	
 
 INSERT INTO author(isbn, author_name)
 VALUES (1, 'Douglas Adams'),
@@ -156,7 +168,7 @@ VALUES	(2, 103.00, '2014-10-02', '2014-10-03'),
         (18, 31.00, '2014-01-01',	'2014-06-17'),
         (20, 131.00, '2014-01-02', 	'2014-02-07'),
         (25, 105.50, '2014-01-01', '2014-03-05'),
-        (26, 122.00, '2014-11-05', '2014-11-05'),
+        (26, 210.50, '2014-11-05', '2014-11-05'),
         (27, 152.00, '2014-01-02',	'2014-02-01'),
         (28, 74.50, '2014-01-01', '2014-03-05'),
         (1, 64.50, '2014-09-06', '2014-09-07'),
@@ -201,8 +213,9 @@ VALUES	(1,	1,	'rent',	1),
         (19, 13, 'buy', 1),
         (20, 10, 'buy', 1),
         (21, 8, 'rent',	1),
-        (22, 5, 'rent',	1);
-			
+        (22, 5, 'rent',	1),
+        (12, 4, 'rent', 1);
+	
 
 INSERT INTO credit_card(credit_card_number, credit_card_name, credit_card_expiration, credit_card_type)
 VALUES	(4485000000000000,	'card',	'2016-03-02',	'VISA'),
@@ -222,13 +235,25 @@ VALUES	(15, '2014-09-07',	'2014-09-11', 1, 'shipped',	'1-day'),
         (21, '2014-09-23',	'2014-09-24',	1,	'shipped',	'1-day'),
         (22, '2014-10-25',	'2014-10-26',	6,	'shipped',	'1-day');
 	
-
+-- edited
 INSERT INTO review(studentID, isbn, rating)
 VALUES	(8,	4,	4),
-		(9, 13,	4),
+		(9, 13,	5),
         (10, 13, 4.5),
         (11, 4,	3);
 
+INSERT INTO instructor(first_name, last_name, universityID, departmentID)
+VALUES	('Joe', 'Johnson', 1, 1),
+		('Bob', 'Barnes', 2, 2),
+        ('Sam', 'Smith', 3, 5);
 
+INSERT INTO course (courseID, course_name, instructorID)
+	VALUES	(101, 'English 101', 1),
+			(102, 'Linear Algebra', 2),
+            (103, 'Intro to Computer Science', 3);
 
-
+INSERT INTO course_books(courseID, isbn)
+VALUES 	(101, 1),
+		(101, 2),
+		(102, 5),
+        (103, 13);
