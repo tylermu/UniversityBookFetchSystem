@@ -14,7 +14,7 @@ def connect_to_database():
             host="localhost",
             user="root",
             password=password, #Enter your password
-            database="cisc450project2"
+            database="cisc450project"
         )
         return connection
     except Error as e:
