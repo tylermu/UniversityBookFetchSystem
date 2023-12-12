@@ -564,13 +564,27 @@ def submitReview(cursor, connection):
             # Prompt for ISBN of the book to review
             while True:
                 isbn_to_review = input("Enter the ISBN of the book you want to review: ")
-                matching_books = [(isbn, title, order_id) for isbn, title, order_id in purchased_books if str(isbn) == isbn_to_review]
 
-                if matching_books:
-                    orderID_to_review = matching_books[0][2]
-                    break
+                # Check if the student has already reviewed the selected book
+                existing_review_query = """
+                SELECT COUNT(*)
+                FROM review
+                WHERE isbn = %s AND studentID = %s
+                """
+                cursor.execute(existing_review_query, (isbn_to_review, studentID))
+                existing_review_count = cursor.fetchone()[0]
+                if existing_review_count == 0:
+
+                    matching_books = [(isbn, title, order_id) for isbn, title, order_id in purchased_books if str(isbn) == isbn_to_review]
+
+                    if matching_books:
+                        orderID_to_review = matching_books[0][2]
+                        break
+                    else:
+                        print("Invalid ISBN. Please enter a valid ISBN from the list.")
                 else:
-                    print("Invalid ISBN. Please enter a valid ISBN from the list.")
+                    print("You have already reviewed this book")
+                    return
 
             # Prompt user to enter rating and comment
             rating = float(input("Enter a rating between 0.0 and 5.0 (one decimal place): "))
