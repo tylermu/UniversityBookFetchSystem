@@ -64,7 +64,7 @@ def addBook(cursor, connection):
 
     print(bname + " added with an inventory number of : " + invNum)
 
-    #function handles adding a new book
+    #function handles adding a new university ---------------------------------------------------------------------------------------------
 def addUniversity(cursor, connection):
     response = input("\nDo you want to add a new university to the system (y/n)? ")
     if response.lower() != 'y':
@@ -80,12 +80,32 @@ def addUniversity(cursor, connection):
         else:
             print("Invalid name length. Please enter a name with 100 characters or fewer.")
 
+    #loop to ensure adminID is valid
+    while True:
+        adminID = input("Enter your admin ID: ")
+        query = f"SELECT COUNT(*) FROM administrator WHERE admin_employeeID = {adminID}"
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+
+        #if adminID exists, continue
+        if count > 0:
+            break
+        else:
+            print("Invalid ID. Please input a valid adminID")
+
     insert_query = """
-    INSERT INTO university (university_name)
-    VALUES (%s)
+    INSERT INTO university (university_name, admin_employeeID)
+    VALUES (%s, %s)
     """
-    #cursor.execute(insert_query, (universityName))
-    #connection.commit()
+    cursor.execute(insert_query, (universityName, 1))
+    connection.commit()
+
+    
+    query = f"SELECT universityID FROM university WHERE university_name = '{universityName}'"
+    cursor.execute(query)
+    universityID = cursor.fetchone()[0]
+
+    print("Added university with the name: " + universityName)
 
     print("\nHere are the current departments")
     select_and_print(cursor, "SELECT departmentID, dep_name FROM department", "Displaying data from the 'department' table", ["departmentID", "dep_name"])
@@ -107,6 +127,13 @@ def addUniversity(cursor, connection):
     departments_list = [(department) for department in departments.split(',')] #all the dept numbers in departments_list
 
     for each in departments_list:
+        insert_query = """
+        INSERT INTO university_department (universityID, departmentID)
+        VALUES (%s, %s)
+        """
+
+        cursor.execute(insert_query, (universityID, each))
+        connection.commit()
         while True:
             response = input("Would you like to add a course for dept with deptID " + each + " (y/n)?")
             if response == 'y':
@@ -114,20 +141,17 @@ def addUniversity(cursor, connection):
             else:
                 break
 
+    while True:
+        response = input("Would you like to associate books to a course (y/n)?")
+        if response != 'y':
+            break
+        else:
+            courseToBook(cursor, connection)
 
-    
+    print("Finalizing query..")
+    print("Done adding university with the name: " + universityName)
 
-
-    #insert_query = """
-    #INSERT INTO university (university_name)
-    #VALUES (%s)
-    #"""
-
-    #cursor.execute(insert_query, (universityName))
-    #connection.commit()
-
-    #print("Added university with the name: " + universityName)
-
+    #add a new department
 def addDepartment(cursor, connection):
     print("Here are the current departments:")
     select_and_print(cursor, "SELECT departmentID, dep_name FROM department", "Displaying data from the 'department' table", ["departmentID", "dep_name"])
@@ -203,3 +227,33 @@ def addCourse(cursor, connection, deptID):
             addCourse(cursor, connection, deptID)
     
     return
+
+def courseToBook(cursor, connection):
+    print("\nHere are the current books in the system")
+    select_and_print(cursor, "SELECT isbn, book_title FROM book", "Displaying data from the 'book' table", ["isbn", "book title"])
+    
+    while True:
+        bookISBN = input("\nEnter the isbn for the book you want to associate to a course:")
+        if len(bookISBN) < 20:
+            break
+        else:
+            print("Please input a valid ISBN")
+
+    print("\nHere are the current courses in the system")
+    select_and_print(cursor, "SELECT courseID, course_name FROM course", "Displaying data from the 'course' table", ["courseID", "course name"])
+
+    while True:
+        courseID2 = input("\nEnter the courseID for the course you want to associate to the book:")
+        if len(courseID2) < 20:
+            break
+        else:
+            print("Please input a valid courseID")
+
+    insert_query = """
+    INSERT INTO course_books (courseID, isbn)
+    VALUES (%s, %s)
+    """
+    cursor.execute(insert_query, (courseID2, bookISBN))
+    connection.commit()
+
+    print("\nBook successfully connected to the course")
