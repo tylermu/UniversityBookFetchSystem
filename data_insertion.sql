@@ -232,16 +232,24 @@ VALUES	(8,	4,	4),
 		(9, 13,	5),
         (10, 13, 4.5),
         (11, 4,	3);
+        
+UPDATE book
+SET average_rating = 4.8
+WHERE isbn = 13;
+
+UPDATE book
+SET average_rating = 3.5
+WHERE isbn = 4;
 
 INSERT INTO instructor(first_name, last_name, universityID, departmentID)
 VALUES	('Joe', 'Johnson', 1, 1),
 		('Bob', 'Barnes', 2, 2),
         ('Sam', 'Smith', 3, 5);
 
-INSERT INTO course (courseID, course_name, instructorID)
-	VALUES	(101, 'English 101', 1),
-			(102, 'Linear Algebra', 2),
-            (103, 'Intro to Computer Science', 3);
+INSERT INTO course (courseID, course_name, instructorID, departmentID)
+	VALUES	(101, 'English 101', 1, 1),
+			(102, 'Linear Algebra', 2, 2),
+            (103, 'Intro to Computer Science', 3, 5);
 
 INSERT INTO course_books(courseID, isbn)
 VALUES 	(101, 1),

@@ -527,7 +527,102 @@ def cancel_order(cursor, connection, orderID):
 
 
 def submitReview(cursor, connection):
-    return
+    response = input("\nDo you want to review a book you've ordered (y/n)? ")
+    if response.lower() != 'y':
+        return
+    
+    while True:
+        # Ensure valid studentID
+        studentID = input("Enter your student ID: ")
+        query = f"SELECT COUNT(*) FROM student WHERE studentID = {studentID}"
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+
+        # if studentID exists, continue
+        if count > 0:
+            print("checking for books purchased...")
+            query = """
+            SELECT b.isbn, b.book_title, fo.orderID
+            FROM book b
+            JOIN add_book ab ON b.isbn = ab.isbn
+            JOIN final_order fo ON ab.cartID = fo.cartID
+            JOIN cart c ON fo.cartID = c.cartID
+            WHERE c.studentID = %s AND fo.status != 'canceled'
+            """
+
+            cursor.execute(query, (studentID,))
+            purchased_books = cursor.fetchall()
+
+            if not purchased_books:
+                print("You haven't purchased any books yet.")
+                return
+
+            print("\n======= Your Purchased Books =======")
+            for book in purchased_books:
+                print(f"ISBN: {book[0]}, Title: {book[1]}")
+
+            # Prompt for ISBN of the book to review
+            while True:
+                isbn_to_review = input("Enter the ISBN of the book you want to review: ")
+
+                # Check if the student has already reviewed the selected book
+                existing_review_query = """
+                SELECT COUNT(*)
+                FROM review
+                WHERE isbn = %s AND studentID = %s
+                """
+                cursor.execute(existing_review_query, (isbn_to_review, studentID))
+                existing_review_count = cursor.fetchone()[0]
+                if existing_review_count == 0:
+
+                    matching_books = [(isbn, title, order_id) for isbn, title, order_id in purchased_books if str(isbn) == isbn_to_review]
+
+                    if matching_books:
+                        orderID_to_review = matching_books[0][2]
+                        break
+                    else:
+                        print("Invalid ISBN. Please enter a valid ISBN from the list.")
+                else:
+                    print("You have already reviewed this book")
+                    return
+
+            # Prompt user to enter rating and comment
+            rating = float(input("Enter a rating between 0.0 and 5.0 (one decimal place): "))
+            while not (0.0 <= rating <= 5.0):
+                print("Invalid rating. Please enter a rating between 0.0 and 5.0.")
+                rating = float(input("Enter a rating between 0.0 and 5.0 (one decimal place): "))
+
+            comment = input("Enter a comment (optional, max 500 characters): ")
+            
+            # Insert the review into the database
+            insert_review_query = """
+            INSERT INTO review (orderID, rating, comment, date_submitted, isbn, studentID)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            cursor.execute(insert_review_query, (orderID_to_review, rating, comment, datetime.now().date(), isbn_to_review, studentID))
+            
+            # Update the average rating in the book table
+            update_avg_rating_query = """
+            UPDATE book
+            SET average_rating = (
+                SELECT AVG(rating)
+                FROM review
+                WHERE isbn = %s
+            )
+            WHERE isbn = %s
+            """
+            cursor.execute(update_avg_rating_query, (isbn_to_review, isbn_to_review))
+
+            connection.commit()
+
+            print("Review submitted successfully.")
+            break
+                 
+
+        else:
+            print("\nInvalid student ID. Please enter a valid student ID")
+    
+
 
 def createTroubleTicket(cursor, connection):
     return
