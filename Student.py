@@ -591,15 +591,13 @@ def submitReview(cursor, connection):
             while not (0.0 <= rating <= 5.0):
                 print("Invalid rating. Please enter a rating between 0.0 and 5.0.")
                 rating = float(input("Enter a rating between 0.0 and 5.0 (one decimal place): "))
-
-            comment = input("Enter a comment (optional, max 500 characters): ")
             
             # Insert the review into the database
             insert_review_query = """
-            INSERT INTO review (orderID, rating, comment, date_submitted, isbn, studentID)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO review (orderID, rating, date_submitted, isbn, studentID)
+            VALUES (%s, %s, %s, %s, %s)
             """
-            cursor.execute(insert_review_query, (orderID_to_review, rating, comment, datetime.now().date(), isbn_to_review, studentID))
+            cursor.execute(insert_review_query, (orderID_to_review, rating, datetime.now().date(), isbn_to_review, studentID))
             
             # Update the average rating in the book table
             update_avg_rating_query = """
