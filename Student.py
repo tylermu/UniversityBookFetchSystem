@@ -1,4 +1,4 @@
-from sharedModule import connect_to_database, select_and_print
+from sharedModule import select_and_print
 import re
 from datetime import datetime
 
@@ -11,32 +11,35 @@ def studentmain(cursor, connection):
         print("")
         print("Which action are you performing?")
         print("1. Create Student Account")
-        print("2. Shop for Books")
-        print("3. View Carts and Checkout")
-        print("4. Manage Orders")
-        print("5. Submit Book Review")
-        print("6. Create Trouble Ticket")
-        print("7. Go Back")
+        print("2. Display Book Recommendations")
+        print("3. Shop for Books")
+        print("4. View Carts and Checkout")
+        print("5. Manage Orders")
+        print("6. Submit Book Review")
+        print("7. Create Trouble Ticket")
+        print("8. Go Back")
 
         response = input("Enter number: ")
         if response == '1':
             addStudent(cursor, connection)
         elif response == '2':
+            displayRecommendations(cursor, connection)
+        elif response == '3':
             #User wants to shop for books
             shopBooks(cursor, connection)
-        elif response == '3':
+        elif response == '4':
             #User wants to view their cart
             viewCart(cursor, connection)
-        elif response == '4':
+        elif response == '5':
             #User wants to manage their order
             manageOrder(cursor, connection)
-        elif response == '5':
+        elif response == '6':
             #User wants to review a book they've purchased
             submitReview(cursor, connection)
-        elif response == '6':
+        elif response == '7':
             #User wants to file a complaint via the trouble ticket system
             createTroubleTicket(cursor, connection)
-        elif response == '7':
+        elif response == '8':
             break
         else:
             print("\nInvalid choice, try again")
@@ -695,3 +698,7 @@ def createTroubleTicket(cursor, connection):
 
         else:
             print("\nInvalid student ID. Please enter a valid student ID")
+
+def displayRecommendations(cursor, connection):
+    #skeleton for future function
+    print("Here are your recommendations:")
