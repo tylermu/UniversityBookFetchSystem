@@ -1,6 +1,7 @@
 from sharedModule import select_and_print
 import re
 from datetime import datetime
+from collections import defaultdict
 
 def studentmain(cursor, connection):
 
@@ -432,6 +433,75 @@ def submitOrder(cursor, connection, cartID):
     connection.commit()
 
     print("Order successfully submitted.")
+
+    #update Recommendations:
+    # 1. Get the ISBNs of the books purchased in the current order
+    get_purchased_books_query = """
+    SELECT ab.isbn
+    FROM add_book ab
+    WHERE ab.cartID = %s
+    """
+    cursor.execute(get_purchased_books_query, (cartID,))
+    purchased_books_isbns = [row[0] for row in cursor.fetchall()]
+
+    # 2. For each purchased book, find related books and insert recommendations
+    for isbn in purchased_books_isbns:
+        # Define the criteria for recommendations (category, rating, keywords)
+        get_book_info_query = """
+        SELECT category, average_rating
+        FROM book
+        WHERE isbn = %s
+        """
+        cursor.execute(get_book_info_query, (isbn,))
+        category, average_rating = cursor.fetchone()
+
+        # Find related books based on criteria
+        get_related_books_query = """
+        SELECT isbn, book_title
+        FROM book
+        WHERE isbn != %s
+            AND category = %s
+            AND average_rating > 3
+            AND isbn NOT IN (
+                SELECT isbn
+                FROM recommendation
+                WHERE studentID = (
+                    SELECT studentID
+                    FROM cart
+                    WHERE cartID = %s
+                )
+            )
+        """
+        cursor.execute(get_related_books_query, (isbn, category, cartID))
+        related_books = cursor.fetchall()
+
+        # 3. Insert recommendations into the recommendation table
+        insert_recommendation_query = """
+        INSERT INTO recommendation (isbn, studentID)
+        VALUES (%s, (
+            SELECT studentID
+            FROM cart
+            WHERE cartID = %s
+        ))
+        """
+        for related_isbn, _ in related_books:
+            cursor.execute(insert_recommendation_query, (related_isbn, cartID))
+
+        # 4. Delete tuples from the Recommendation table for purchased books
+        delete_recommendation_query = """
+        DELETE FROM recommendation
+        WHERE isbn = %s
+            AND studentID = (
+                SELECT studentID
+                FROM cart
+                WHERE cartID = %s
+            )
+        """
+        cursor.execute(delete_recommendation_query, (isbn, cartID))
+
+    connection.commit()
+
+
 
 def validate_date_format(date_string, date_format):
     try:
