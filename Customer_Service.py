@@ -38,7 +38,7 @@ def customerservicemain(cursor, connection):
             print("\nInvalid choice, try again")
 
 
-#function handles adding a new student
+#function handles creating a ticket
 def createTicket(cursor, connection):
     response = input("\nDo you want to create a Trouble Ticket (y/n)? ")
     if response.lower() != 'y':
@@ -96,35 +96,13 @@ def createTicket(cursor, connection):
 
     while True:
         problemDesc = input("Please describe the problem you are experiencing (Max = 500 characters): ")
-        if len(problemDesc) < 500:
+        if len(problemDesc) <= 500:
             if len(problemDesc) == 0:
                 problemDesc = None
             break
         else:
             print("Your description exceeds the limit of characters allowed. Please try again.")
 
-    
-    while True:
-        print("What is the status of your trouble ticket?")
-        print("1. New")
-        print("2. Assigned")
-        print("3. In-process")
-        print("4. Completed")
-        categoryNumber = input("Enter number: ")
-        if categoryNumber == 1:
-            status = "new"
-            break
-        elif categoryNumber == 2:
-            status = "assigned"
-            break
-        elif categoryNumber == 3:
-            status = "in-process"
-            break
-        elif categoryNumber == 4:
-            status = "completed"
-            break
-        else:
-            print("Invalid choice. Please enter a number 1 through 4.")
 
     while True:
         csName = input("Please enter your first name all lowercase: ")
@@ -146,15 +124,133 @@ def createTicket(cursor, connection):
         else:
             print("The name you entered is not recognized. Please try again.")
 
+    status = 'new'
+
+
 
     insert_query = """
-    INSERT INTO trouble_ticket (trouble_category, date_logged, ticket_title, prob_desc, cs_employeeID)
-    VALUES (%s, %s, %s, %s, %s)
+    INSERT INTO trouble_ticket (trouble_category, date_logged, ticket_title, prob_desc, cs_employeeID, status)
+    VALUES (%s, %s, %s, %s, %s, %s)
     """
 
-    cursor.execute(insert_query, (troubleCategory, dateLogged, ticketTitle, problemDesc, csID))
+    cursor.execute(insert_query, (troubleCategory, dateLogged, ticketTitle, problemDesc, csID, status))
     connection.commit()
 
     print("Touble ticket created successfully.")
+
+
+#this function deletes a ticket given a ticketID
+def deleteTicket(cursor,connection):
+
+    while True:
+        query = """
+                SELECT *
+                FROM trouble_ticket
+                """
+        select_and_print(cursor, query, "Displaying Trouble Tickets", ["ticketID", "trouble_category", "date_logged", "date_completed", "ticket_title", "prob_desc","fixed_desc","status","cs_employeeID","a_employeeID","studentID"])
+
+        ticketID = input("Please enter the ticketID of the Trouble Ticket you would like to delete or enter nothing to escape.")
+
+        if ticketID == "":
+            return
+
+        check_query = "SELECT * FROM trouble_ticket WHERE ticketID = %s"
+        cursor.execute(check_query, (ticketID))
+        result = cursor.fetchone()
+
+        if result:
+            sure = input("Are you sure you want to delete all Trouble Tickets where ticketID = " + ticketID + " (y/n)?")
+            if sure == 'y':
+                #if ticketID entered exists then it will delete those occurences
+                delete_query = "DELETE FROM trouble_ticket WHERE ticketID = %s"
+                cursor.execute(delete_query, (ticketID))
+                connection.commit()
+                print("Trouble Ticket successfully deleted.")
+                break
+        else:
+            print("The ticketID you entered does not exist in the database.")
+
+
+
+def updateTicket(cursor,connection):
+
+    while True:
+        query = """
+                SELECT *
+                FROM trouble_ticket
+                """
+        select_and_print(cursor, query, "Displaying Trouble Tickets", ["ticketID", "trouble_category", "date_logged", "date_completed", "ticket_title", "prob_desc","fixed_desc","status","cs_employeeID","a_employeeID","studentID"])
+
+        ticketID = input("Please enter the ticketID of the Trouble Ticket you would like to update or enter nothing to escape.")
+
+        if ticketID == "":
+            return
+
+        check_query = "SELECT * FROM trouble_ticket WHERE ticketID = %s"
+        cursor.execute(check_query, (ticketID))
+        result = cursor.fetchone()
+
+        if result:
+            #need to make cases for adding assigned, in process and completed tuples
+            while True:
+                check_query = "SELECT * FROM trouble_ticket WHERE ticketID = %s AND status = 'in-process'"
+                cursor.execute(check_query, (ticketID))
+                result2 = cursor.fetchone()
+                if result2:
+                    print("You will be marking a ticket as completed.")
+                    while True:
+                        dateCompleted = input("Please enter the date the Trouble Ticket was resolved in the format YYYY-MM-DD: ")
+                        if(dateCompleted == ''):
+                            leaveBlank =  input("Do you wish to not enter a date for your ticket (y/n)?")
+                            if leaveBlank == 'y':
+                                dateCompleted = None
+                                break
+                        if re.match('^\d{4}-\d{2}-\d{2}$', dateCompleted) is not None:
+                            dateCompleted_obj = datetime.strptime(dateCompleted, '%Y-%m-%d')
+                            if dateCompleted_obj > datetime(2023, 1, 1):
+                                break
+                            else:
+                                print("The date you entered is invalid. Please try again.")
+                        else:
+                            print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
+                    
+                    while True:
+                        fixDesc = input("Please describe how the Trouble was resolved (Max = 500 characters): ")
+                        if len(fixDesc) <= 500:
+                            if len(fixDesc) == 0:
+                                fixDesc = None
+                            break
+                        else:
+                            print("Your description exceeds the limit of characters allowed. Please try again.")
+
+                    #update the attributes in necessary columns for new inserted tuple
+                    newTuple = list(result)
+                    newTuple[3] = dateCompleted
+                    newTuple[6] = fixDesc
+                    newTuple[7] = 'completed'
+
+
+                    insert_query = """
+                    INSERT INTO trouble_ticket (ticketID, trouble_category, date_logged, date_completed, ticket_title, prob_desc,fixed_desc,status,cs_employeeID,a_employeeID,studentID)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """
+                    cursor.execute(insert_query, tuple(newTuple))
+                    connection.commit()
+
+                    print("Touble ticket updated successfully.")
+                    break
+                check_query = "SELECT * FROM trouble_ticket WHERE ticketID = %s AND status = 'assigned'"
+                cursor.execute(check_query, (ticketID))
+                result3 = cursor.fetchone()
+
+                
+
+
+
+
+
+
+
+        
 
 
