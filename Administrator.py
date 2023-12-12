@@ -257,3 +257,44 @@ def courseToBook(cursor, connection):
     connection.commit()
 
     print("\nBook successfully connected to the course")
+
+def updateInventory(cursor, connection):
+    response = input("\nDo you want to update a books inventory number in the system (y/n)? ")
+    if response.lower() != 'y':
+        return
+    print("\nThe books currently in the system are")
+    select_and_print(cursor, "SELECT isbn, book_title FROM book", "Displaying data from the 'book' table", ["isbn", "book title"])
+
+    # Loop to ensure ISBN exists in the book table
+    while True:
+        isbn = input("\nEnter the isbn for the book you wish to change the inventory number for: ")
+        book_query = f"SELECT COUNT(*) FROM book WHERE isbn = '{isbn}'"
+        cursor.execute(book_query)
+        book_count = cursor.fetchone()[0]
+
+        # If ISBN exists in book table, break the loop
+        if book_count > 0:
+            break
+        else:
+            print("ISBN does not exist in the book table. Please input a valid ISBN.")
+
+    inventoryNum = f"SELECT inventory_number FROM book WHERE isbn = '{isbn}'"
+    cursor.execute(inventoryNum)
+    inventoryNum = cursor.fetchone()[0]
+
+    print("\nThe book currently has " + str(inventoryNum) + " copies in stock")
+
+    while True:
+        newInventory = input("How many copies of this book should be in inventory? ")
+        if int(newInventory) >= 0:
+            query = """
+                    UPDATE book
+                    SET inventory_number = %s
+                    WHERE isbn = %s
+                    """
+            cursor.execute(query, (newInventory, isbn))
+            connection.commit()
+            print("The book with the isbn " + isbn + " has a new inventory number of " + str(newInventory))
+            break
+        else: 
+            print("Please enter the number of copies this book has (must be a number greater than 0)")
