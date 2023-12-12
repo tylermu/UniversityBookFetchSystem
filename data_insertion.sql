@@ -232,6 +232,14 @@ VALUES	(8,	4,	4),
 		(9, 13,	5),
         (10, 13, 4.5),
         (11, 4,	3);
+        
+UPDATE book
+SET average_rating = 4.8
+WHERE isbn = 13;
+
+UPDATE book
+SET average_rating = 3.5
+WHERE isbn = 4;
 
 INSERT INTO instructor(first_name, last_name, universityID, departmentID)
 VALUES	('Joe', 'Johnson', 1, 1),

@@ -1,4 +1,4 @@
-from sharedModule import connect_to_database, select_and_print
+from sharedModule import select_and_print
 import re
 from datetime import datetime
 
@@ -11,32 +11,35 @@ def studentmain(cursor, connection):
         print("")
         print("Which action are you performing?")
         print("1. Create Student Account")
-        print("2. Shop for Books")
-        print("3. View Carts and Checkout")
-        print("4. Manage Orders")
-        print("5. Submit Book Review")
-        print("6. Create Trouble Ticket")
-        print("7. Go Back")
+        print("2. Display Book Recommendations")
+        print("3. Shop for Books")
+        print("4. View Carts and Checkout")
+        print("5. Manage Orders")
+        print("6. Submit Book Review")
+        print("7. Create Trouble Ticket")
+        print("8. Go Back")
 
         response = input("Enter number: ")
         if response == '1':
             addStudent(cursor, connection)
         elif response == '2':
+            displayRecommendations(cursor, connection)
+        elif response == '3':
             #User wants to shop for books
             shopBooks(cursor, connection)
-        elif response == '3':
+        elif response == '4':
             #User wants to view their cart
             viewCart(cursor, connection)
-        elif response == '4':
+        elif response == '5':
             #User wants to manage their order
             manageOrder(cursor, connection)
-        elif response == '5':
+        elif response == '6':
             #User wants to review a book they've purchased
             submitReview(cursor, connection)
-        elif response == '6':
+        elif response == '7':
             #User wants to file a complaint via the trouble ticket system
             createTroubleTicket(cursor, connection)
-        elif response == '7':
+        elif response == '8':
             break
         else:
             print("\nInvalid choice, try again")
@@ -527,7 +530,175 @@ def cancel_order(cursor, connection, orderID):
 
 
 def submitReview(cursor, connection):
-    return
+    response = input("\nDo you want to review a book you've ordered (y/n)? ")
+    if response.lower() != 'y':
+        return
+    
+    while True:
+        # Ensure valid studentID
+        studentID = input("Enter your student ID: ")
+        query = f"SELECT COUNT(*) FROM student WHERE studentID = {studentID}"
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+
+        # if studentID exists, continue
+        if count > 0:
+            print("checking for books purchased...")
+            query = """
+            SELECT b.isbn, b.book_title, fo.orderID
+            FROM book b
+            JOIN add_book ab ON b.isbn = ab.isbn
+            JOIN final_order fo ON ab.cartID = fo.cartID
+            JOIN cart c ON fo.cartID = c.cartID
+            WHERE c.studentID = %s AND fo.status != 'canceled'
+            """
+
+            cursor.execute(query, (studentID,))
+            purchased_books = cursor.fetchall()
+
+            if not purchased_books:
+                print("You haven't purchased any books yet.")
+                return
+
+            print("\n======= Your Purchased Books =======")
+            for book in purchased_books:
+                print(f"ISBN: {book[0]}, Title: {book[1]}")
+
+            # Prompt for ISBN of the book to review
+            while True:
+                isbn_to_review = input("Enter the ISBN of the book you want to review: ")
+
+                # Check if the student has already reviewed the selected book
+                existing_review_query = """
+                SELECT COUNT(*)
+                FROM review
+                WHERE isbn = %s AND studentID = %s
+                """
+                cursor.execute(existing_review_query, (isbn_to_review, studentID))
+                existing_review_count = cursor.fetchone()[0]
+                if existing_review_count == 0:
+
+                    matching_books = [(isbn, title, order_id) for isbn, title, order_id in purchased_books if str(isbn) == isbn_to_review]
+
+                    if matching_books:
+                        orderID_to_review = matching_books[0][2]
+                        break
+                    else:
+                        print("Invalid ISBN. Please enter a valid ISBN from the list.")
+                else:
+                    print("You have already reviewed this book")
+                    return
+
+            # Prompt user to enter rating and comment
+            rating = float(input("Enter a rating between 0.0 and 5.0 (one decimal place): "))
+            while not (0.0 <= rating <= 5.0):
+                print("Invalid rating. Please enter a rating between 0.0 and 5.0.")
+                rating = float(input("Enter a rating between 0.0 and 5.0 (one decimal place): "))
+            
+            # Insert the review into the database
+            insert_review_query = """
+            INSERT INTO review (orderID, rating, date_submitted, isbn, studentID)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+            cursor.execute(insert_review_query, (orderID_to_review, rating, datetime.now().date(), isbn_to_review, studentID))
+            
+            # Update the average rating in the book table
+            update_avg_rating_query = """
+            UPDATE book
+            SET average_rating = (
+                SELECT AVG(rating)
+                FROM review
+                WHERE isbn = %s
+            )
+            WHERE isbn = %s
+            """
+            cursor.execute(update_avg_rating_query, (isbn_to_review, isbn_to_review))
+
+            connection.commit()
+
+            print("Review submitted successfully.")
+            break
+                 
+
+        else:
+            print("\nInvalid student ID. Please enter a valid student ID")
+    
+
 
 def createTroubleTicket(cursor, connection):
-    return
+    response = input("\nDo you want to create a Trouble Ticket (y/n)? ")
+    if response.lower() != 'y':
+        return
+    
+    while True:
+        # Ensure valid studentID
+        studentID = input("Enter your student ID: ")
+        query = f"SELECT COUNT(*) FROM student WHERE studentID = {studentID}"
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+
+        # if studentID exists, continue
+        if count > 0:
+        
+            while True:
+                print("Which category does your trouble ticket fall under?")
+                print("1. User Profile")
+                print("2. Products")
+                print("3. Cart")
+                print("4. Orders")
+                print("5. Others")
+                categoryNumber = input("Enter number: ")
+                if categoryNumber == '1':
+                    troubleCategory = "userprofile"
+                    break
+                elif categoryNumber == '2':
+                    troubleCategory = "products"
+                    break
+                elif categoryNumber == '3':
+                    troubleCategory = "cart"
+                    break
+                elif categoryNumber == '4':
+                    troubleCategory = "orders"
+                    break
+                elif categoryNumber == '5':
+                    troubleCategory = "others"
+                    break
+                else:
+                    print("Invalid choice. Please enter a number 1 through 5.")
+
+
+            dateLogged = datetime.now().date()
+
+            while True:
+                ticketTitle = input("Please enter a title for your ticket. A title is required (Max = 100 characters): ")
+                if 0 < len(ticketTitle) < 101:
+                    break
+                else:
+                    print("Invalid title length. Please try again.")
+
+            while True:
+                problemDesc = input("Please describe the problem you are experiencing (Max = 500 characters): ")
+                if len(problemDesc) < 500:
+                    if len(problemDesc) == 0:
+                        problemDesc = None
+                    break
+                else:
+                    print("Your description exceeds the limit of characters allowed. Please try again.")
+
+            insert_query = """
+            INSERT INTO trouble_ticket (trouble_category, date_logged, ticket_title, prob_desc, status, studentID)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """
+
+            cursor.execute(insert_query, (troubleCategory, dateLogged, ticketTitle, problemDesc, 'new', studentID))
+            connection.commit()
+
+            print("Trouble ticket created successfully.")
+            break
+
+        else:
+            print("\nInvalid student ID. Please enter a valid student ID")
+
+def displayRecommendations(cursor, connection):
+    #skeleton for future function
+    print("Here are your recommendations:")

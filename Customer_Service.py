@@ -52,25 +52,26 @@ def createTicket(cursor, connection):
         print("4. Orders")
         print("5. Others")
         categoryNumber = input("Enter number: ")
-        if categoryNumber == 1:
+        if categoryNumber == '1':
             troubleCategory = "userprofile"
             break
-        elif categoryNumber == 2:
-            troubleCategory = "Products"
+        elif categoryNumber == '2':
+            troubleCategory = "products"
             break
-        elif categoryNumber == 3:
-            troubleCategory = "Cart"
+        elif categoryNumber == '3':
+            troubleCategory = "cart"
             break
-        elif categoryNumber == 4:
-            troubleCategory = "Orders"
+        elif categoryNumber == '4':
+            troubleCategory = "orders"
             break
-        elif categoryNumber == 5:
-            troubleCategory = "Others"
+        elif categoryNumber == '5':
+            troubleCategory = "others"
             break
         else:
             print("Invalid choice. Please enter a number 1 through 5.")
 
 
+    ##could probably delete this entire code chunk (while True and everything inside)
     while True:
         dateLogged = input("Please enter today's date in the format YYYY-MM-DD: ")
         if(dateLogged == ''):
@@ -86,6 +87,8 @@ def createTicket(cursor, connection):
                 print("The date you entered is invalid. Please try again.")
         else:
             print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
+    #can replace above while True look with this code that gets the datestring:
+    #dateLogged = datetime.now().date()
 
     while True:
         ticketTitle = input("Please enter a title for your ticket. A title is required (Max = 100 characters): ")
@@ -104,6 +107,8 @@ def createTicket(cursor, connection):
             print("Your description exceeds the limit of characters allowed. Please try again.")
 
 
+    #we don't want hardcoded names. Instead prompt the user to enter their customer service ID, and use that in the query for cs_employeeID
+    #however, check to ensure the entered cs_ID matches one in the database (see createTroubleTicket() method toward the bottom of Student.py)
     while True:
         csName = input("Please enter your first name all lowercase: ")
         if csName == "joan":
@@ -128,6 +133,7 @@ def createTicket(cursor, connection):
 
 
 
+    #will need to add parameter for status
     insert_query = """
     INSERT INTO trouble_ticket (trouble_category, date_logged, ticket_title, prob_desc, cs_employeeID, status)
     VALUES (%s, %s, %s, %s, %s, %s)
