@@ -770,5 +770,26 @@ def createTroubleTicket(cursor, connection):
             print("\nInvalid student ID. Please enter a valid student ID")
 
 def displayRecommendations(cursor, connection):
-    #skeleton for future function
-    print("Here are your recommendations:")
+    while True:
+        # Ensure valid studentID
+        studentID = input("Enter your student ID: ")
+        query = f"SELECT COUNT(*) FROM student WHERE studentID = {studentID}"
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+
+        # If studentID exists, continue
+        if count > 0:
+            # Display books recommended to the student (in recommendation table), if applicable
+            get_recommendations_query = """
+            SELECT b.isbn, b.book_title, b.average_rating
+            FROM recommendation r
+            JOIN book b ON r.isbn = b.isbn
+            WHERE r.studentID = %s
+            """
+            params = (studentID,)
+            select_and_print(cursor, get_recommendations_query, "Recommended Books", ["ISBN", "Title", "Average Rating"], params)
+            break
+        else:
+            print("\nInvalid student ID. Please enter a valid student ID")
+
+
