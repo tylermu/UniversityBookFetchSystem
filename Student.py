@@ -625,4 +625,75 @@ def submitReview(cursor, connection):
 
 
 def createTroubleTicket(cursor, connection):
-    return
+    response = input("\nDo you want to create a Trouble Ticket (y/n)? ")
+    if response.lower() != 'y':
+        return
+    
+    while True:
+        # Ensure valid studentID
+        studentID = input("Enter your student ID: ")
+        query = f"SELECT COUNT(*) FROM student WHERE studentID = {studentID}"
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+
+        # if studentID exists, continue
+        if count > 0:
+        
+            while True:
+                print("Which category does your trouble ticket fall under?")
+                print("1. User Profile")
+                print("2. Products")
+                print("3. Cart")
+                print("4. Orders")
+                print("5. Others")
+                categoryNumber = input("Enter number: ")
+                if categoryNumber == '1':
+                    troubleCategory = "userprofile"
+                    break
+                elif categoryNumber == '2':
+                    troubleCategory = "products"
+                    break
+                elif categoryNumber == '3':
+                    troubleCategory = "cart"
+                    break
+                elif categoryNumber == '4':
+                    troubleCategory = "orders"
+                    break
+                elif categoryNumber == '5':
+                    troubleCategory = "others"
+                    break
+                else:
+                    print("Invalid choice. Please enter a number 1 through 5.")
+
+
+            dateLogged = datetime.now().date()
+
+            while True:
+                ticketTitle = input("Please enter a title for your ticket. A title is required (Max = 100 characters): ")
+                if 0 < len(ticketTitle) < 101:
+                    break
+                else:
+                    print("Invalid title length. Please try again.")
+
+            while True:
+                problemDesc = input("Please describe the problem you are experiencing (Max = 500 characters): ")
+                if len(problemDesc) < 500:
+                    if len(problemDesc) == 0:
+                        problemDesc = None
+                    break
+                else:
+                    print("Your description exceeds the limit of characters allowed. Please try again.")
+
+            insert_query = """
+            INSERT INTO trouble_ticket (trouble_category, date_logged, ticket_title, prob_desc, status, studentID)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """
+
+            cursor.execute(insert_query, (troubleCategory, dateLogged, ticketTitle, problemDesc, 'new', studentID))
+            connection.commit()
+
+            print("Trouble ticket created successfully.")
+            break
+
+        else:
+            print("\nInvalid student ID. Please enter a valid student ID")
