@@ -116,19 +116,19 @@ def createTicket(cursor, connection):
     while True:
         csName = input("Please enter your first name all lowercase: ")
         if csName == "joan":
-            csID = 1
+            csID = '1'
             break
         elif csName == "patricia":
-            csID = 2
+            csID = '2'
             break
         elif csName == "julian":
-            csID = 3
+            csID = '3'
             break
         elif csName == "dan":
-            csID = 4
+            csID = '4'
             break
         elif csName == "kevin":
-            csID = 5
+            csID = '5'
             break
         else:
             print("The name you entered is not recognized. Please try again.")
@@ -278,13 +278,13 @@ def updateTicket(cursor,connection):
                     while True:
                         aName = input("Please enter the first name of the administrator that you would liek to assign to the Touble Ticket in all lowercase: ")
                         if aName == "stephanie":
-                            aID = 1
+                            aID = '1'
                             break
                         elif aName == "peter":
-                            aID = 2
+                            aID = '2'
                             break
                         elif aName == "anthony":
-                            aID = 3
+                            aID = '3'
                             break
                         else:
                             print("The name you entered is not recognized. Please try again.")
@@ -375,19 +375,19 @@ def updateOrder(cursor, connection):
 
                     while True:
                         status = input("Enter a number: ")
-                        if status == 1:
+                        if status == '1':
                             statusString = "new"
                             break
-                        elif status == 2:
+                        elif status == '2':
                             statusString = "processed"
                             break
-                        elif status == 3:
+                        elif status == '3':
                             statusString = "shipping"
                             break
-                        elif status == 4:
+                        elif status == '4':
                             statusString = "shipped"
                             break
-                        elif status == 5:
+                        elif status == '5':
                             statusString = "canceled"
                             break
                         else:
@@ -410,13 +410,13 @@ def updateOrder(cursor, connection):
 
                     while True:
                         ship = input("Enter a number: ")
-                        if ship == 1:
+                        if ship == '1':
                             shipString = "1-day"
                             break
-                        elif ship == 2:
+                        elif ship == '2':
                             shipString = "2-day"
                             break
-                        elif ship == 3:
+                        elif ship == '3':
                             statusString = "standard"
                             break
                         else:
