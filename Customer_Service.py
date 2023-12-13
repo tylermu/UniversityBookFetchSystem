@@ -90,6 +90,10 @@ def createTicket(cursor, connection):
     #can replace above while True look with this code that gets the datestring:
     #dateLogged = datetime.now().date()
 
+    #i know but i wanted to give the user to enter the date in case the problem occured earlier
+    #than when the problem is entered. I just tell them to enter today's date because that will be
+    #the most common date and will make it simpler for the user
+
     while True:
         ticketTitle = input("Please enter a title for your ticket. A title is required (Max = 100 characters): ")
         if 0 < len(ticketTitle) < 101:
@@ -133,7 +137,6 @@ def createTicket(cursor, connection):
 
 
 
-    #will need to add parameter for status
     insert_query = """
     INSERT INTO trouble_ticket (trouble_category, date_logged, ticket_title, prob_desc, cs_employeeID, status)
     VALUES (%s, %s, %s, %s, %s, %s)
@@ -181,20 +184,26 @@ def deleteTicket(cursor,connection):
 def updateTicket(cursor,connection):
 
     while True:
-        query = """
-                SELECT *
-                FROM trouble_ticket
-                """
-        select_and_print(cursor, query, "Displaying Trouble Tickets", ["ticketID", "trouble_category", "date_logged", "date_completed", "ticket_title", "prob_desc","fixed_desc","status","cs_employeeID","a_employeeID","studentID"])
+        while True:
+            query = """
+                    SELECT *
+                    FROM trouble_ticket
+                    """
+            select_and_print(cursor, query, "Displaying Trouble Tickets", ["ticketID", "trouble_category", "date_logged", "date_completed", "ticket_title", "prob_desc","fixed_desc","status","cs_employeeID","a_employeeID","studentID"])
 
-        ticketID = input("Please enter the ticketID of the Trouble Ticket you would like to update or enter nothing to escape.")
+            ticketID = input("Please enter the ticketID of the Trouble Ticket you would like to update or enter nothing to escape.")
 
-        if ticketID == "":
-            return
+            if ticketID == "":
+                return
 
-        check_query = "SELECT * FROM trouble_ticket WHERE ticketID = %s"
-        cursor.execute(check_query, (ticketID))
-        result = cursor.fetchone()
+            check_query = "SELECT * FROM trouble_ticket WHERE ticketID = %s"
+            cursor.execute(check_query, (ticketID))
+            result = cursor.fetchone()
+            if result:
+                break
+            else:
+                print("The ticketID you entered is not in the database.")
+
 
         if result:
             #need to make cases for adding assigned, in process and completed tuples
@@ -203,7 +212,7 @@ def updateTicket(cursor,connection):
                 cursor.execute(check_query, (ticketID))
                 result2 = cursor.fetchone()
                 if result2:
-                    print("You will be marking a ticket as completed.")
+                    print("You will be marking a Trouble Ticket as completed.")
                     while True:
                         dateCompleted = input("Please enter the date the Trouble Ticket was resolved in the format YYYY-MM-DD: ")
                         if(dateCompleted == ''):
@@ -235,7 +244,6 @@ def updateTicket(cursor,connection):
                     newTuple[6] = fixDesc
                     newTuple[7] = 'completed'
 
-
                     insert_query = """
                     INSERT INTO trouble_ticket (ticketID, trouble_category, date_logged, date_completed, ticket_title, prob_desc,fixed_desc,status,cs_employeeID,a_employeeID,studentID)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -248,6 +256,224 @@ def updateTicket(cursor,connection):
                 check_query = "SELECT * FROM trouble_ticket WHERE ticketID = %s AND status = 'assigned'"
                 cursor.execute(check_query, (ticketID))
                 result3 = cursor.fetchone()
+                if result3:
+                    print("You are marking a Trouble Ticket as 'in-process'")
+                    newTuple = list(result)
+                    newTuple[7] = 'in-process'
+
+                    insert_query = """
+                    INSERT INTO trouble_ticket (ticketID, trouble_category, date_logged, date_completed, ticket_title, prob_desc,fixed_desc,status,cs_employeeID,a_employeeID,studentID)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """
+                    cursor.execute(insert_query, tuple(newTuple))
+                    connection.commit()
+
+                    print("Touble ticket updated successfully.")
+                    break
+                check_query = "SELECT * FROM trouble_ticket WHERE ticketID = %s AND status = 'new'"
+                cursor.execute(check_query, (ticketID))
+                result4 = cursor.fetchone()
+                if result4:
+                    print("You will be marking a Trouble Ticket as 'assigned'")
+                    while True:
+                        aName = input("Please enter the first name of the administrator that you would liek to assign to the Touble Ticket in all lowercase: ")
+                        if aName == "stephanie":
+                            aID = 1
+                            break
+                        elif aName == "peter":
+                            aID = 2
+                            break
+                        elif aName == "anthony":
+                            aID = 3
+                            break
+                        else:
+                            print("The name you entered is not recognized. Please try again.")
+
+
+                    newTuple = list(result)
+                    newTuple[9] = aID
+                    newTuple[7] = 'assigned'
+
+                    insert_query = """
+                    INSERT INTO trouble_ticket (ticketID, trouble_category, date_logged, date_completed, ticket_title, prob_desc,fixed_desc,status,cs_employeeID,a_employeeID,studentID)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """
+                    cursor.execute(insert_query, tuple(newTuple))
+                    connection.commit()
+
+                    print("Touble ticket updated successfully.")
+                    break
+
+
+def deleteOrder(cursor,connection):
+
+    while True:
+        query = """
+                SELECT *
+                FROM final_order
+                """
+        select_and_print(cursor, query, "Displaying order information", ["orderID", "cartID", "date_created", "date_completed", "status", "shit_type", "ship_address", "credit_cardID" ])
+
+        orderID = input("Please enter the orderID of the order that you would like to delete or enter nothing to escape.")
+
+        if orderID == "":
+            return
+
+
+
+        check_query = "SELECT * FROM final_order WHERE orderID = %s"
+        cursor.execute(check_query, (orderID))
+        result = cursor.fetchone()
+        
+        if result:
+            sure = input("Are you sure you want to delete the order where orderID = " + orderID + " (y/n)?")
+            if sure == 'y':
+                #if orderID entered exists then it will delete those occurences
+                delete_query = "DELETE FROM final_order WHERE orderID = %s"
+                cursor.execute(delete_query, (orderID))
+                connection.commit()
+                print("Order successfully deleted.")
+                break
+        else:
+            print("The orderID you entered does not exist in the database.")
+
+
+def updateOrder(cursor, connection):
+    while True:
+        query = """
+                SELECT *
+                FROM final_order
+                """
+        select_and_print(cursor, query, "Displaying order information", ["orderID", "cartID", "date_created", "date_completed", "status", "shit_type", "ship_address", "credit_cardID" ])
+
+        orderID = input("Please enter the orderID of the order that you would like to update or enter nothing to escape.")
+
+        if orderID == "":
+            return
+
+
+        check_query = "SELECT * FROM final_order WHERE orderID = %s"
+        cursor.execute(check_query, (orderID))
+        result = cursor.fetchone()
+        
+        if result:
+            while True:
+                print("Which attribute would you like to update?")
+                print("1. Status")
+                print("2. Ship type")
+                print("3. Shipping address")
+                attribute = input("Enter a number: ")
+                
+                if attribute == 1:
+                    print("You have chosen to update the status attribute in this order.")
+                    print("Which status would you like to assign to the order?")
+                    print("1. New")
+                    print("2. Processed")
+                    print("3. Shipping")
+                    print("4. Shipped")
+                    print("5. Canceled")
+
+                    while True:
+                        status = input("Enter a number: ")
+                        if status == 1:
+                            statusString = "new"
+                            break
+                        elif status == 2:
+                            statusString = "processed"
+                            break
+                        elif status == 3:
+                            statusString = "shipping"
+                            break
+                        elif status == 4:
+                            statusString = "shipped"
+                            break
+                        elif status == 5:
+                            statusString = "canceled"
+                            break
+                        else:
+                            print("The number you entered is invalid. Please try again.")
+                    
+                    update_query = "UPDATE final_order SET status = %s WHERE orderID = %s"
+                    cursor.execute(update_query, (statusString, orderID))
+                    connection.commit()
+                    print("Order status successfully updated.")
+                    yn = input("Would you like to update this order any further (y/n)?")
+                    if yn == "n":
+                        break
+                
+                elif attribute == 2:
+                    print("You have chosen to update the ship type attribute in this order.")
+                    print("Which ship type would you like to assign to the order?")
+                    print("1. 1-day")
+                    print("2. 2-day")
+                    print("3. standard")
+
+                    while True:
+                        ship = input("Enter a number: ")
+                        if ship == 1:
+                            shipString = "1-day"
+                            break
+                        elif ship == 2:
+                            shipString = "2-day"
+                            break
+                        elif ship == 3:
+                            statusString = "standard"
+                            break
+                        else:
+                            print("The number you entered is invalid. Please try again.")
+                    
+                    update_query = "UPDATE final_order SET ship_type = %s WHERE orderID = %s"
+                    cursor.execute(update_query, (statusString, orderID))
+                    connection.commit()
+                    print("Order ship type successfully updated.")
+                    yn = input("Would you like to update this order any further (y/n)?")
+                    if yn == "n":
+                        break
+
+                elif attribute == 3:
+                    print("You have chosen to update the ship address attribute in this order.")
+                    while True:
+                        address = input("Please enter the shipping address you would like to have assigned for this order (Max = 100 characters): ")
+                        if len(address) > 100:
+                            print("The address you entered is too long. Please try typing it another way.")
+                        else:
+                            break
+                    update_query = "UPDATE final_order SET ship_address = %s WHERE orderID = %s"
+                    cursor.execute(update_query, (address, orderID))
+                    connection.commit()
+                    print("Order shipping address successfully updated.")
+                    yn = input("Would you like to update this order any further (y/n)?")
+                    if yn == "n":
+                        break
+                elif attribute == "":
+                    break
+                else:
+                    print("The number you entered is invalid. Please try again or enter nothing to escape.")
+                
+        else:
+            print("The orderID you entered is invalid. Please try again.")
+        break
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    
+
+
+
+
+
+
+
 
                 
 
