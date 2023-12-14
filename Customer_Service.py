@@ -124,7 +124,7 @@ def deleteTicket(cursor,connection):
                 SELECT *
                 FROM trouble_ticket
                 """
-    select_and_print2(cursor, query, "Displaying Trouble Tickets", ["ticketID", "trouble_category", "date_logged", "date_completed", "ticket_title", "prob_desc","fixed_desc","status","cs_employeeID","a_employeeID","studentID","created_by"])
+    select_and_print(cursor, query, "Displaying Trouble Tickets", ["ticketID", "trouble_category", "date_logged", "date_completed", "ticket_title", "prob_desc","fixed_desc","status","cs_employeeID","a_employeeID","studentID","created_by"])
 
     while True:
 
