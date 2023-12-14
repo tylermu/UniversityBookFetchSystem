@@ -58,6 +58,7 @@
 		cs_employeeID MEDIUMINT UNSIGNED, 
 		a_employeeID MEDIUMINT UNSIGNED, 
 		studentID INT UNSIGNED,
+		created_by VARCHAR(2), 
 		PRIMARY KEY (ticketID, status),
 		foreign key (cs_employeeID) references customer_support(employeeID)
 			ON UPDATE CASCADE 
@@ -308,5 +309,9 @@
 			ON UPDATE CASCADE 
 			ON DELETE CASCADE
 	);
+
+
+
+
 
 

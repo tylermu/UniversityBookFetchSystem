@@ -55,25 +55,25 @@ VALUES	('Stephanie', 'Smith', 65000),
         ('Anthony', 'Carl', 67000);
 
 -- edited 
-INSERT INTO trouble_ticket(ticketID, trouble_category, date_logged, date_completed, cs_employeeID, ticket_title, prob_desc, fixed_desc,	status,  a_employeeID, studentID)
-VALUES	(121,	'userprofile',	'2014-10-24',	NULL, 1, 'forgotten password',	'password needs to be reset after verification', NULL, 'new', NULL,	7),
-		(120,	'products', '2014-08-31', 	NULL, 1, 	'pages missing from the book', 'chapter 5 of the book i ordered is missing', NULL,	'new', NULL, 15),
-		(101,	'userprofile',	'2014-07-15',	NULL, 2,	'unable to log in',	'password reset needed', NULL, 	'new', NULL, 20),
-		(102,	'products',	'2014-08-23',	NULL, 3,	'bad / damaged product recieved', NULL, NULL, 'new', NULL,	21),
-		(114,	'userprofile',	'2014-09-05',	NULL, 3,	'unable to edit details on profile', NULL, NULL, 'new', NULL, 21),
-		(104,	'orders',	'2014-10-05',	NULL, 3,	'order not recieved',	'i have still not recieved my order. it has been 10 days',	NULL,	'new', NULL,	14),
-		(103,	'cart',	'2014-02-04',	NULL, 3,	'cart not updating',	'cant delete stuff from the cart', NUll, 'new', NULL, 23),
-		(103,	'cart',	'2014-02-05',	NULL, 3,	'cart not updating',	'cant delete stuff from the cart',	NULL, 'assigned',	1, 23),
-		(106,	'userprofile',	'2014-08-05',	NULL, 3,	'password lost', NULL, NULL, 'new', NULL, 29),
-		(106,	'userprofile',	'2014-08-06',	NULL, 3,	'password lost', NULL, NULL, 'assigned',	1,	29),
-		(106,	'userprofile',	'2014-08-07',	NULL, 3,	'password lost', NULL, NULL, 'in-process',	1,	29),
-		(106,	'userprofile',	'2014-08-08',	'2014-08-11', 3,	'password lost', 	'pasword was reset', 'new password issued',	'completed',	1,	29),
-		(103,	'cart',	'2014-02-06',	NULL, 3,	'cart not updating',	'cant delete stuff from the cart', NULL, 'in-process',	1,	23),
-		(121,	'userprofile',	'2014-10-25',	NULL, 1,	'forgotten password',	'password needs to be reset after verification', NULL,	'assigned',	2,	7),
-		(100,	'orders',	'2014-10-24',	NULL, 4, 'bug in orders',	'1 order got cancelled automatically', NULL, 'new', NULL, NULL),
-		(100,	'orders',	'2014-10-24',	NULL, 4, 'bug in orders',	'1 order got cancelled automatically', NULL,	'assigned', 3, NULL),
-		(130,	'cart',	'2014-12-01',	NULL, 5,	'proposed maintance work',	'yearly update scheduled', NULL, 'new', NULL, NULL),
-        (121,	'userprofile',	'2014-10-25',	'2014-10-26', 1,	'forgotten password',	'password needs to be reset after verification', 'password reset',	'completed',	2,	7);
+INSERT INTO trouble_ticket(ticketID, trouble_category, date_logged, date_completed, cs_employeeID, ticket_title, prob_desc, fixed_desc,	status,  a_employeeID, studentID, created_by)
+VALUES	(121,	'userprofile',	'2014-10-24',	NULL, 1, 'forgotten password',	'password needs to be reset after verification', NULL, 'new', NULL,	7, 'CS'),
+		(120,	'products', '2014-08-31', 	NULL, 1, 	'pages missing from the book', 'chapter 5 of the book i ordered is missing', NULL,	'new', NULL, 15, 'CS'),
+		(101,	'userprofile',	'2014-07-15',	NULL, 2,	'unable to log in',	'password reset needed', NULL, 	'new', NULL, 20, 'CS'),
+		(102,	'products',	'2014-08-23',	NULL, 3,	'bad / damaged product recieved', NULL, NULL, 'new', NULL,	21, 'CS'),
+		(114,	'userprofile',	'2014-09-05',	NULL, 3,	'unable to edit details on profile', NULL, NULL, 'new', NULL, 21, 'CS'),
+		(104,	'orders',	'2014-10-05',	NULL, 3,	'order not recieved',	'i have still not recieved my order. it has been 10 days',	NULL,	'new', NULL, 14, 'CS'),
+		(103,	'cart',	'2014-02-04',	NULL, 3,	'cart not updating',	'cant delete stuff from the cart', NUll, 'new', NULL, 23, 'CS'),
+		(103,	'cart',	'2014-02-05',	NULL, 3,	'cart not updating',	'cant delete stuff from the cart',	NULL, 'assigned',	1, 23, 'S'),
+		(106,	'userprofile',	'2014-08-05',	NULL, 3,	'password lost', NULL, NULL, 'new', NULL, 29, 'CS'),
+		(106,	'userprofile',	'2014-08-06',	NULL, 3,	'password lost', NULL, NULL, 'assigned',	1,	29, 'S'),
+		(106,	'userprofile',	'2014-08-07',	NULL, 3,	'password lost', NULL, NULL, 'in-process',	1,	29, 'S'),
+		(106,	'userprofile',	'2014-08-08',	'2014-08-11', 3,	'password lost', 	'pasword was reset', 'new password issued',	'completed',	1,	29, 'S'),
+		(103,	'cart',	'2014-02-06',	NULL, 3,	'cart not updating',	'cant delete stuff from the cart', NULL, 'in-process',	1,	23, 'S'),
+		(121,	'userprofile',	'2014-10-25',	NULL, 1,	'forgotten password',	'password needs to be reset after verification', NULL,	'assigned',	2,	7, 'S'),
+		(100,	'orders',	'2014-10-24',	NULL, 4, 'bug in orders',	'1 order got cancelled automatically', NULL, 'new', NULL, NULL, 'CS'),
+		(100,	'orders',	'2014-10-24',	NULL, 4, 'bug in orders',	'1 order got cancelled automatically', NULL,	'assigned', 3, NULL, 'CS'),
+		(130,	'cart',	'2014-12-01',	NULL, 5,	'proposed maintance work',	'yearly update scheduled', NULL, 'new', NULL, NULL, 'CS'),
+        (121,	'userprofile',	'2014-10-25',	'2014-10-26', 1,	'forgotten password',	'password needs to be reset after verification', 'password reset',	'completed',	2,	7, 'S');
 		
 
 

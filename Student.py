@@ -756,11 +756,11 @@ def createTroubleTicket(cursor, connection):
                     print("Your description exceeds the limit of characters allowed. Please try again.")
 
             insert_query = """
-            INSERT INTO trouble_ticket (trouble_category, date_logged, ticket_title, prob_desc, status, studentID)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO trouble_ticket (trouble_category, date_logged, ticket_title, prob_desc, status, studentID, created_by)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
 
-            cursor.execute(insert_query, (troubleCategory, dateLogged, ticketTitle, problemDesc, 'new', studentID))
+            cursor.execute(insert_query, (troubleCategory, dateLogged, ticketTitle, problemDesc, 'new', studentID, 'S'))
             connection.commit()
 
             print("Trouble ticket created successfully.")
