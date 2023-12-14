@@ -151,10 +151,21 @@ def deleteTicket(cursor,connection):
 def updateTicket(cursor,connection):
 
         query = """
-                    SELECT *
-                    FROM trouble_ticket
-                    """
-        select_and_print(cursor, query, "Displaying Trouble Tickets", ["ticketID", "trouble_category", "date_logged", "date_completed", "ticket_title", "prob_desc","fixed_desc","status","cs_employeeID","a_employeeID","studentID","created_by"])
+            SELECT 
+                ticketID,
+                trouble_category,
+                date_logged,
+                date_completed,
+                CASE WHEN LENGTH(ticket_title) > 15 THEN CONCAT(LEFT(ticket_title, 15), '...') ELSE ticket_title END AS ticket_title,
+                CASE WHEN LENGTH(prob_desc) > 15 THEN CONCAT(LEFT(prob_desc, 15), '...') ELSE prob_desc END AS prob_desc,
+                CASE WHEN LENGTH(fixed_desc) > 15 THEN CONCAT(LEFT(fixed_desc, 15), '...') ELSE fixed_desc END AS fixed_desc,
+                status,
+                cs_employeeID,
+                a_employeeID,
+                studentID
+            FROM trouble_ticket;
+        """
+        select_and_print(cursor, query, "Displaying Trouble Tickets", ["ID", "category", "logged", "completed", "title", "prob_desc","fix_desc","status","cs_ID","a_ID","s_ID"])
         
         while True:
 
