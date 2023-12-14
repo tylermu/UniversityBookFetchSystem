@@ -157,7 +157,7 @@ def updateTicket(cursor,connection):
                     SELECT *
                     FROM trouble_ticket
                     """
-        select_and_print(cursor, query, "Displaying Trouble Tickets", ["ticketID", "trouble_category", "date_logged", "date_completed", "ticket_title", "prob_desc","fixed_desc","status","cs_employeeID","a_employeeID","studentID","created_by"])
+        select_and_print2(cursor, query, "Displaying Trouble Tickets", ["tID", "category", "logged", "completed", "title", "prob_desc","fix_desc","status","csID","aID","sID"])
         
         while True:
 
@@ -492,3 +492,34 @@ def updateOrder(cursor, connection):
         else:
             print("The orderID you entered is invalid. Please try again.")
         break
+
+
+def truncate_string(s, max_length=15):
+    """ Truncate a string to max_length and append '...' if it was longer """
+    return (s[:max_length] + '...') if len(s) > max_length else s
+
+def select_and_print2(cursor, query, title, headers):
+    # Execute the query
+    cursor.execute(query)
+    
+    # Fetch all the results
+    results = cursor.fetchall()
+
+    # Print the title
+    print(title)
+    print("=" * (len(headers) * (15 + 1)))  # 15 characters + 1 space per column
+
+    # Print the headers
+    for header in headers:
+        print(truncate_string(header).ljust(15), end=' ')
+    print()
+
+    # Print a separator
+    print("-" * (len(headers) * (15 + 1)))
+
+    # Print each row of data
+    for row in results:
+        for column in row:
+            column = truncate_string(str(column))  # Ensure column is a string and truncate
+            print(column.ljust(15), end=' ')
+        print()
