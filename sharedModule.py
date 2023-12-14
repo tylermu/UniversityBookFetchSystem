@@ -41,7 +41,7 @@ def select_and_print(cursor, query, section_name, column_names=None, params=None
         return
 
     if column_names:
-        column_widths = [max(len(str(col)), max(len(str(row[i])) for row in result)) + 3 for i, col in enumerate(column_names)]
+        column_widths = [max(len(str(col)), max(len(str(row[i])) for row in result)) + 1 for i, col in enumerate(column_names)]
         print("  ".join(col.ljust(width) for col, width in zip(column_names, column_widths)))
 
     for row in result:
