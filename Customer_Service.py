@@ -47,6 +47,9 @@ def createTicket(cursor, connection):
     while True:
         # Ensure valid csID
         csID = input("\nEnter your customer service ID: ")
+        while csID.isdigit() != True:
+            print("\nInvalid customer support ID. Please enter a valid customer service ID")
+            csID = input("\nEnter your customer service ID: ")
         query = f"SELECT COUNT(*) FROM customer_support WHERE employeeID = {csID}"
         cursor.execute(query)
         count = cursor.fetchone()[0]
@@ -121,7 +124,7 @@ def deleteTicket(cursor,connection):
                 SELECT *
                 FROM trouble_ticket
                 """
-    select_and_print(cursor, query, "Displaying Trouble Tickets", ["ticketID", "trouble_category", "date_logged", "date_completed", "ticket_title", "prob_desc","fixed_desc","status","cs_employeeID","a_employeeID","studentID","created_by"])
+    select_and_print2(cursor, query, "Displaying Trouble Tickets", ["ticketID", "trouble_category", "date_logged", "date_completed", "ticket_title", "prob_desc","fixed_desc","status","cs_employeeID","a_employeeID","studentID","created_by"])
 
     while True:
 
@@ -198,11 +201,12 @@ def updateTicket(cursor,connection):
                                 dateCompleted = None
                                 break
                         if re.match('^\d{4}-\d{2}-\d{2}$', dateCompleted) is not None:
-                            dateCompleted_obj = datetime.strptime(dateCompleted, '%Y-%m-%d')
-                            if dateCompleted_obj > datetime(2023, 1, 1):
-                                break
-                            else:
-                                print("The date you entered is invalid. Please try again.")
+                            try:
+                                dateCompleted_obj = datetime.strptime(dateCompleted, '%Y-%m-%d')
+                                if dateCompleted_obj > datetime(2023, 1, 1):
+                                    break
+                            except ValueError:
+                                print("Invalid date: ", dateCompleted)
                         else:
                             print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
                     
@@ -279,6 +283,9 @@ def updateTicket(cursor,connection):
                         break
                     while True:
                         aID = input("Please enter the ID of the administrator you would like to assign to the Trouble Ticket: ")
+                        while aID.isdigit() != True:
+                            print("\nInvalid administrator ID. Please enter a valid administrator ID")
+                            aID = input("\nEnter the administrator ID: ")
                         query = f"SELECT COUNT(*) FROM administrator WHERE admin_employeeID = {aID}"
                         cursor.execute(query)
 
@@ -461,11 +468,12 @@ def updateOrder(cursor, connection):
                     while True:
                         dateCompleted = input("Please enter the date the Trouble Ticket was resolved in the format YYYY-MM-DD: ")
                         if re.match('^\d{4}-\d{2}-\d{2}$', dateCompleted) is not None:
-                            dateCompleted_obj = datetime.strptime(dateCompleted, '%Y-%m-%d')
-                            if dateCompleted_obj > datetime(2023, 1, 1):
-                                break
-                            else:
-                                print("The date you entered is invalid. Please try again.")
+                            try:
+                                dateCompleted_obj = datetime.strptime(dateCompleted, '%Y-%m-%d')
+                                if dateCompleted_obj > datetime(2023, 1, 1):
+                                    break
+                            except ValueError:
+                                print("Invalid date: ", dateCompleted)
                         else:
                             print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
                     update_query = "UPDATE final_order SET date_completed = %s WHERE orderID = %s"
@@ -484,36 +492,3 @@ def updateOrder(cursor, connection):
         else:
             print("The orderID you entered is invalid. Please try again.")
         break
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    
-
-
-
-
-
-
-
-
-                
-
-
-
-
-
-
-
-        
-
-
