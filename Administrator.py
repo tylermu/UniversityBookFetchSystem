@@ -218,13 +218,6 @@ def addCourse(cursor, connection, deptID):
     connection.commit()
 
     print("Course added successfully")
-
-    while True:
-        response = input("Would you like to add another course (y/n)?")
-        if response != 'y':
-            break
-        else:
-            addCourse(cursor, connection, deptID)
     
     return
 
