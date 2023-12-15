@@ -26,16 +26,12 @@ def main():
                     response = input("Enter number: ")
 
                     if response == '1':
-                        userPermissions = 'Student'
                         studentmain(cursor, connection)
                     elif response == '2':
-                        userPermissions = 'Customer Service Employee'
                         customerservicemain(cursor, connection)
                     elif response == '3':
-                        userPermissions = 'Administrator'
                         administratormain(cursor, connection)
                     elif response == '4':
-                        userPermissions = 'Super Administrator'
                         superadministratormain(cursor, connection)
                     elif response == '5':
                         break

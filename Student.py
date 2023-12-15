@@ -1,7 +1,6 @@
 from sharedModule import select_and_print
 import re
 from datetime import datetime
-from collections import defaultdict
 
 def studentmain(cursor, connection):
 
