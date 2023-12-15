@@ -153,7 +153,7 @@ def shopBooks(cursor, connection):
         # Construct the SQL query based on the search term
         if search_term:
             query = f"""
-            SELECT b.isbn, b.book_title, GROUP_CONCAT(a.author_name) AS authors, b.price, b.edition, b.format
+            SELECT b.isbn, b.book_title, GROUP_CONCAT(DISTINCT a.author_name) AS authors, b.price, b.edition, b.format
             FROM book b
             LEFT JOIN author a ON b.isbn = a.isbn
             LEFT JOIN book_keyword k ON b.isbn = k.isbn
@@ -163,7 +163,7 @@ def shopBooks(cursor, connection):
             params = (f'%{search_term}%', f'%{search_term}%', f'%{search_term}%', f'%{search_term}%', f'%{search_term}%')
         else:
             query = """
-            SELECT b.isbn, b.book_title, GROUP_CONCAT(a.author_name) AS authors, b.price, b.edition, b.format
+            SELECT b.isbn, b.book_title, GROUP_CONCAT(DISTINCT a.author_name) AS authors, b.price, b.edition, b.format
             FROM book b
             LEFT JOIN author a ON b.isbn = a.isbn
             GROUP BY b.isbn

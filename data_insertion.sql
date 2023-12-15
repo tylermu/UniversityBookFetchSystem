@@ -122,7 +122,7 @@ VALUES (1, 'new', 55.50, 'English Made Easy Volume One: Learning English through
 	   (9, 'new', 64.50, 'Understanding Intercultural Communication', 'Houghton-Mifflin', '2019-05-04', 3, 'English', 'hardcover', 'academic', 'Communciation'),
 	   (10, 'new', 95.50, 'Psychology', 'McGraw-Hill', '2021-05-04', 2, 'English', 'hardcover', 'academic', 'Psychology'),
 	   (11, 'new', 17.50, 'Guyton and Hall Textbook of Medical Physiology', 'McGraw-Hill', '2022-05-04', 1, 'English', 'hardcover', 'academic', 'Medicine'),
-       (12, 'new', 28.50, 'Pearson Textbook Reader: Reading in Applied and Academic Fields', 'McGraw-Hill', '2020-05-04', 7, 'English', 'hardcover', 'academic', 'English'),
+       (12, 'new', 28.50, 'Pearson Textbook Reader 2: The sequel', 'McGraw-Hill', '2020-05-04', 7, 'English', 'hardcover', 'academic', 'English'),
 	   (13, 'new', 14.50, 'Modern Operating Systems', 'McGraw-Hill', '2019-05-04', 3, 'English', 'hardcover', 'academic', 'Computer Science'),
 	   (14, 'new', 65.50, 'Biology', 'McGraw-Hill', '2021-05-04', 2, 'English', 'hardcover', 'academic', 'Biology'),
 	   (15, 'new', 67.50, 'Chemistry', 'McGraw-Hill', '2022-05-04', 1, 'English', 'hardcover', 'academic', 'Chemistry'),
