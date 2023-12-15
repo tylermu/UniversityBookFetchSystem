@@ -5,6 +5,7 @@ To utilize this book fetch system, users will need a computer that can execute P
 To start the application, first run table_creation.sql followed by data_insertion.sql (run both in an IDE that supports SQL like SQL Workbench). 
 
 You will need to run this command in your terminal to allow the Python program to connect to an SQL database:
+
 _pip install mysql-connector-python_
 
 Then, add the password to your local database in the password.py file
