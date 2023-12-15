@@ -48,7 +48,7 @@ def createTicket(cursor, connection):
         # Ensure valid csID
         csID = input("\nEnter your customer service ID: ")
         while csID.isdigit() != True:
-            print("\nInvalid customer support ID. Please enter a valid customer service ID")
+            print("\nInvalid customer service ID. Please enter a valid customer service ID")
             csID = input("\nEnter your customer service ID: ")
         query = f"SELECT COUNT(*) FROM customer_support WHERE employeeID = {csID}"
         cursor.execute(query)
@@ -114,7 +114,7 @@ def createTicket(cursor, connection):
             break
 
         else:
-            print("\nInvalid customer support ID. Please enter a valid customer service ID")
+            print("\nInvalid customer service ID. Please enter a valid customer service ID")
 
 
 #this function deletes a ticket given a ticketID
