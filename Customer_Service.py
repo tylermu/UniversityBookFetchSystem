@@ -338,7 +338,7 @@ def updateTicket(cursor,connection):
                     cursor.execute(insert_query, (ticketID, trouble_category, date_logged, date_completed, ticket_title, prob_desc,fixed_desc,status,cs_employeeID,a_employeeID,studentID,created_by))
                     connection.commit()
 
-                    print("\nTouble ticket updated successfully.")
+                    print("\nTrouble ticket updated successfully.")
                     break
 
 
