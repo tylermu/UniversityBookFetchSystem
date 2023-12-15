@@ -382,7 +382,7 @@ def updateOrder(cursor, connection):
                 SELECT *
                 FROM final_order
                 """
-        select_and_print(cursor, query, "Displaying order information", ["orderID", "cartID", "date_created", "date_completed", "status", "shit_type", "ship_address", "credit_cardID" ])
+        select_and_print(cursor, query, "Displaying order information", ["orderID", "cartID", "date_created", "date_completed", "status", "ship_type", "ship_address", "credit_cardID" ])
 
         orderID = input("\nPlease enter the orderID of the order that you would like to update or enter nothing to escape: ")
 

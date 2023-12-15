@@ -1,1 +1,1 @@
-password="1fish2fish" #put your password here
+password="" #put your password here
