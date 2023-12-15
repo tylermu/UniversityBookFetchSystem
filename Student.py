@@ -1,7 +1,6 @@
 from sharedModule import select_and_print
 import re
 from datetime import datetime
-from collections import defaultdict
 
 def studentmain(cursor, connection):
 
@@ -110,8 +109,21 @@ def addStudent(cursor, connection):
             break
         else:
             print("Invalid major length. Please enter a major with 20 characters or fewer.")
+    
+    # Display list of universities
+    universities_query = "SELECT universityID, university_name FROM university"
+    cursor.execute(universities_query)
+    universities = cursor.fetchall()
 
-    uniID = int(input("Enter university ID: "))
+    if not universities:
+        print("No universities found. Please add a university first.")
+        return
+
+    print("\nList of Universities:")
+    for university in universities:
+        print(f"{university[0]} - {university[1]}")
+
+    uniID = int(input("\nEnter university ID: "))
     year = int(input("Enter year in university (1-4): "))
 
     insert_query = """
@@ -122,7 +134,13 @@ def addStudent(cursor, connection):
     cursor.execute(insert_query, (fname, lname, email, address, phone, birthdate, major, status, year, uniID))
     connection.commit()
 
-    print("Student added successfully.")
+    # Retrieve the newly added student's ID
+    get_student_id_query = "SELECT LAST_INSERT_ID()"
+    cursor.execute(get_student_id_query)
+    student_id = cursor.fetchone()[0]
+
+    print(f"Student added successfully with ID {student_id}")
+
 
 #function handles listing books and adding them to a cart
 def shopBooks(cursor, connection):
@@ -134,7 +152,7 @@ def shopBooks(cursor, connection):
         # Construct the SQL query based on the search term
         if search_term:
             query = f"""
-            SELECT b.isbn, b.book_title, GROUP_CONCAT(a.author_name) AS authors, b.price, b.edition, b.format
+            SELECT b.isbn, b.book_title, GROUP_CONCAT(DISTINCT a.author_name) AS authors, b.price, b.edition, b.format
             FROM book b
             LEFT JOIN author a ON b.isbn = a.isbn
             LEFT JOIN book_keyword k ON b.isbn = k.isbn
@@ -144,7 +162,7 @@ def shopBooks(cursor, connection):
             params = (f'%{search_term}%', f'%{search_term}%', f'%{search_term}%', f'%{search_term}%', f'%{search_term}%')
         else:
             query = """
-            SELECT b.isbn, b.book_title, GROUP_CONCAT(a.author_name) AS authors, b.price, b.edition, b.format
+            SELECT b.isbn, b.book_title, GROUP_CONCAT(DISTINCT a.author_name) AS authors, b.price, b.edition, b.format
             FROM book b
             LEFT JOIN author a ON b.isbn = a.isbn
             GROUP BY b.isbn
