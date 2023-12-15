@@ -191,6 +191,7 @@
 		format VARCHAR(10) CHECK(format IN("hardcover", "soft", "electronic")) , 
 		category VARCHAR(30), 
 		subcategory VARCHAR(30), 
+        inventory_number INT,
 		average_rating DECIMAL(2,1) CHECK(average_rating BETWEEN 0.0 AND 5.0), 
 		admin_employeeID MEDIUMINT UNSIGNED,
 		foreign key (admin_employeeID) references administrator(admin_employeeID)
