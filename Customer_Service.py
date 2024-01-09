@@ -239,7 +239,7 @@ def updateTicket(cursor,connection):
                                 fixDesc = None
                             break
                         else:
-                            print("Your description exceeds the limit of characters allowed. Please try again.")
+                            print("Your description length exceeds the limit of characters allowed. Please try again.")
 
                     #update the attributes in necessary columns for new inserted tuple
                     tuple = list(result2)
