@@ -1,6 +1,6 @@
 # University Book Fetch System
 
-A program built to allow students to browse and purchase books for University classes
+A program built to allow students to browse and purchase books for university classes
 
 ## Description
 
