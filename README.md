@@ -36,6 +36,7 @@ password="hello"  #put your password here
 
 Contributors names
 
+* Tyler Muchow
 * Cameron Doffing
 * Alena Wadzinske 
 * Isaiah Giebel 
